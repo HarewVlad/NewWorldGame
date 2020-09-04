@@ -30,6 +30,21 @@
 #include "MenuManager.h"
 #include "WorldManager.h"
 #include "WeatherManager.h"
+#include "Player.h"
+#include "SneakyInput.h"
+
+const int MENU_Z = 5;
+const int WEATHER_Z = 10;
+const int WORLD_Z = 0;
+const int PLAYER_Z = 1;
+const int CONTROLLERS_Z = 4;
+
+const float G = -100.0f;
+
+enum class GameState {
+    MENU,
+    PLAY
+};
 
 class GameManager : public cocos2d::Scene
 {
@@ -38,6 +53,8 @@ public:
     static cocos2d::Scene* createScene();
 
     virtual bool init();
+    void initJoystick();
+    void initPressButton();
     
     CREATE_FUNC(GameManager);
 
@@ -46,9 +63,18 @@ public:
 
 private:
     // TODO: make predefined positions of z-buffer for all managers
+    // Objects
     MenuManager *menuManager;
     WorldManager *worldManager;
     WeatherManager *weatherManager;
+    Player *player;
+
+    // Controllers
+    SneakyJoystick *leftJoystick;
+    SneakyButton *rightButton;
+
+    // State
+    GameState currentGameState;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

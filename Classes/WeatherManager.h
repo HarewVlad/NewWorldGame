@@ -16,7 +16,9 @@ enum class WeatherType {
 struct WeatherManager : public cocos2d::Node {
     void addWeatherEffect(WeatherType type);
     void runWeatherEffects();
-    void stopWeatherEffects();
+    void stopAllEffects();
+    void stopEffect(WeatherType type);
+    bool haveEffect(WeatherType type);
     inline int getType() {
         return currentWeather;
     }

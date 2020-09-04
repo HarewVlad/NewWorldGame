@@ -26,6 +26,14 @@ void WeatherManager::runWeatherEffects() {
         this->addChild(emitter, static_cast<int>(WeatherType::SNOW));
     }
 }
-void WeatherManager::stopWeatherEffects() {
+void WeatherManager::stopAllEffects() {
     this->removeFromParentAndCleanup(true);
+}
+
+void WeatherManager::stopEffect(WeatherType type) {
+    this->removeChild(this->getChildByTag(static_cast<int>(type)), true);
+}
+
+bool WeatherManager::haveEffect(WeatherType type) {
+    return currentWeather & static_cast<int>(type);
 }
