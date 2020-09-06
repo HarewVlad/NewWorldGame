@@ -120,17 +120,10 @@ bool GameManager::init()
         // Player Layer
         {
             playerLayer = new PlayerLayer();
-            playerLayer->init(player);
+            playerLayer->init(player, worldManager);
 
             this->addChild(playerLayer, PLAYER_Z, static_cast<int>(Components::PLAYER));
         }
-    }
-
-    // Follow
-    {
-        auto followPlayerAction = Follow::create(player, player->getSprite()->getCenterRect());
-
-        worldManager->runAction(followPlayerAction);
     }
 
     // Controllers
@@ -176,6 +169,12 @@ void GameManager::update(float t) {
                 }
             }
         }
+
+        // Follow
+        {
+            worldManager->getBackground()->setPosition(player->getPosition());
+        }
+
 
         // World
         {

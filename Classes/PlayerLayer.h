@@ -9,7 +9,7 @@
 #include "Player.h"
 
 struct PlayerLayer : public cocos2d::Layer {
-    void init(Player *player);
+    void init(Player *player, cocos2d::Node *node);
 private:
     Player *player;
 };

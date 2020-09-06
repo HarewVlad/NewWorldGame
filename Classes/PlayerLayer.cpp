@@ -4,9 +4,10 @@
 
 #include "PlayerLayer.h"
 
-void PlayerLayer::init(Player *player) {
-    this->addChild(player);
+void PlayerLayer::init(Player *player, cocos2d::Node *node) {
+    this->addChild(node);
+    this->addChild(player->getSprite());
 
-    auto follow = cocos2d::Follow::create(player);
+    auto follow = cocos2d::Follow::create(player->getSprite());
     this->runAction(follow);
 }
