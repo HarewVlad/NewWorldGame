@@ -14,8 +14,6 @@ enum class PlayerState {
     ATTACK
 };
 
-const float PLAYER_SPEED = 0.5f;
-
 struct Player : public cocos2d::Node {
     void init(const std::string &filename, const cocos2d::Vec2 &position);
     void show(float d = 0);
@@ -23,6 +21,12 @@ struct Player : public cocos2d::Node {
     void addAnimation(PlayerState state, cocos2d::Animation *animation);
     inline PlayerState getState() {
         return currentPlayerState;
+    }
+    inline cocos2d::Sprite *getSprite() {
+        return sprite;
+    }
+    inline cocos2d::Vec2 getPosition() {
+        return sprite->getPosition();
     }
     void setState(PlayerState state);
     void setAttackState();
@@ -34,7 +38,8 @@ private:
     std::unordered_map<int, cocos2d::Animation *> animations;
     PlayerState currentPlayerState;
 
-    const int PLAYER_SCALE = 2.0f;
+    const int PLAYER_SCALE = 1;
+    const float PLAYER_SPEED = 200.0f;
 };
 
 

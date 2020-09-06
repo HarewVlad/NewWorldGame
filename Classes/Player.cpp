@@ -13,8 +13,9 @@ void Player::init(const std::string &filename, const cocos2d::Vec2 &position) {
     sprite->setPosition(position);
     cocos2d::PhysicsBody *body = cocos2d::PhysicsBody::createBox(sprite->getContentSize(),
             cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f));
-    body->setDynamic(true);
     body->setRotationEnable(false);
+    body->setDynamic(true);
+    body->setLinearDamping(1.0f);
     sprite->setPhysicsBody(body);
 
     // Add components to node
@@ -81,9 +82,8 @@ void Player::setRunState() {
 }
 
 void Player::move(float t, cocos2d::Vec2 &position) {
-    auto moveBy = cocos2d::MoveBy::create(t, position * PLAYER_SPEED);
-    sprite->setFlippedX(position.x < 0);
-    sprite->runAction(moveBy);
+    auto body = sprite->getPhysicsBody();
+    body->applyForce(position * PLAYER_SPEED);
 
     setState(PlayerState::RUN);
 }

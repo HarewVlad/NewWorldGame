@@ -53,8 +53,8 @@ bool GameManager::init()
     {
         // Sprite frame cache
         {
-            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("woodcutter_idle.plist");
-            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("woodcutter_run.plist");
+            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("enemy_idle.plist");
+            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("enemy_walk.plist");
         }
     }
 
@@ -72,7 +72,7 @@ bool GameManager::init()
         menuManager = new MenuManager();
         menuManager->init("menuBackground.jpg");
 
-        this->addChild(menuManager, MENU_Z);
+        this->addChild(menuManager, MENU_Z, static_cast<int>(Components::MENU));
     }
 
     // World
@@ -81,28 +81,27 @@ bool GameManager::init()
         worldManager->init("worldBackground.png");
         worldManager->initTerrain("grassBlock.png", "dirtBlock.png");
 
-        this->addChild(worldManager, WORLD_Z);
+        this->addChild(worldManager, WORLD_Z, static_cast<int>(Components::WORLD));
     }
 
     // Weather
     {
         weatherManager = new WeatherManager();
 
-        this->addChild(weatherManager, WEATHER_Z);
+        this->addChild(weatherManager, WEATHER_Z, static_cast<int>(Components::WEATHER));
     }
 
     // Player
     {
         player = new Player();
-        cocos2d::Vec2 position = origin + visibleSize * 0.8f;
-        player->init("woodcutter.png", position);
+        player->init("Satyr_03_Idle_000.png", origin + visibleSize * 0.5f);
 
         // Animations
         {
             // Idle
             {
-                auto frames = getSpriteFrames("woodcutter_idle_%03d.png", 4);
-                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 4.0f);
+                auto frames = getSpriteFrames("Satyr_03_Idle_%03d.png", 12);
+                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 12.0f);
                 animation->retain();
 
                 player->addAnimation(PlayerState::IDLE, animation);
@@ -110,21 +109,36 @@ bool GameManager::init()
 
             // Run
             {
-                auto frames = getSpriteFrames("woodcutter_run_%03d.png", 6);
-                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 6.0f);
+                auto frames = getSpriteFrames("Satyr_03_Walking_%03d.png", 18);
+                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 18.0f);
                 animation->retain();
 
                 player->addAnimation(PlayerState::RUN, animation);
             }
         }
 
-        this->addChild(player, PLAYER_Z);
+        // Player Layer
+        {
+            playerLayer = new PlayerLayer();
+            playerLayer->init(player);
+
+            this->addChild(playerLayer, PLAYER_Z, static_cast<int>(Components::PLAYER));
+        }
+    }
+
+    // Follow
+    {
+        auto followPlayerAction = Follow::create(player, player->getSprite()->getCenterRect());
+
+        worldManager->runAction(followPlayerAction);
     }
 
     // Controllers
     {
-        initJoystick();
-        initPressButton();
+        controllerManager = new ControllerManager();
+        controllerManager->init(origin + visibleSize * 0.5f);
+
+        this->addChild(controllerManager, CONTROLLERS_Z, static_cast<int>(Components::CONTROLLERS));
     }
 
     schedule(CC_SCHEDULE_SELECTOR(GameManager::update), 1 / 144.0f);
@@ -151,8 +165,8 @@ void GameManager::update(float t) {
     {
         // Movement
         {
-            auto joystickPosition = leftJoystick->getStickPosition();
-            auto isButtonPressed = rightButton->getValue();
+            auto joystickPosition = controllerManager->getStickPosition().getNormalized();
+            auto isButtonPressed = controllerManager->getValue();
 
             if (!joystickPosition.isZero()) { // Movement
                 player->move(t, joystickPosition);
@@ -181,64 +195,4 @@ void GameManager::update(float t) {
             }
         }
     }
-}
-
-void GameManager::initJoystick() {
-    auto screenSize = Director::getInstance()->getVisibleSize();
-    auto screenOrigin = Director::getInstance()->getVisibleOrigin();
-
-    Rect joystickBaseDimensions;
-    joystickBaseDimensions = Rect(0, 0, 100.f, 100.0f);
-
-    Point joystickBasePosition;
-    joystickBasePosition = Vec2(screenOrigin.x + screenSize.width / 8.0f, screenOrigin.y + screenSize.height * 0.2f);
-
-    SneakyJoystickSkinnedBase *joystickBase = new SneakyJoystickSkinnedBase();
-    joystickBase->init();
-    joystickBase->setPosition(joystickBasePosition);
-    joystickBase->setBackgroundSprite(Sprite::create("joystickBackground.png"));
-    joystickBase->setThumbSprite(Sprite::create("joystickThumb.png"));
-
-    SneakyJoystick *aJoystick = new SneakyJoystick();
-    aJoystick->initWithRect(joystickBaseDimensions);
-    aJoystick->autorelease();
-    joystickBase->setJoystick(aJoystick);
-    joystickBase->setPosition(joystickBasePosition);
-    joystickBase->setOpacity(50);
-
-    leftJoystick = joystickBase->getJoystick();
-    leftJoystick->retain();
-    this->addChild(joystickBase, CONTROLLERS_Z);
-}
-
-void GameManager::initPressButton() {
-    auto screenSize = Director::getInstance()->getVisibleSize();
-    auto screenOrigin = Director::getInstance()->getVisibleOrigin();
-
-    Rect attackButtonDimensions = Rect(0, 0, 64.0f, 64.0f);
-    Point attackButtonPosition;
-    attackButtonPosition = Point(screenOrigin.x + screenSize.width * 0.9f, screenOrigin.y + screenSize.height * 0.2f);
-
-    SneakyButtonSkinnedBase *attackButtonBase = SneakyButtonSkinnedBase::create();
-    attackButtonBase->setPosition(attackButtonPosition);
-
-    attackButtonBase->setDefaultSprite(Sprite::create("joystickThumb.png"));
-    attackButtonBase->setActivatedSprite(Sprite::create("joystickThumb.png"));
-    attackButtonBase->setDisabledSprite(Sprite::create("joystickThumb.png"));
-    attackButtonBase->setPressSprite(Sprite::create("joystickThumb.png"));
-
-    SneakyButton *aAttackButton = SneakyButton::create();
-    aAttackButton->initWithRect(attackButtonDimensions);
-
-//  aAttackButton->setIsHoldable(true);
-//  aAttackButton->setIsToggleable(true);
-
-    attackButtonBase->setButton(aAttackButton);
-    attackButtonBase->setPosition(attackButtonPosition);
-    attackButtonBase->setOpacity(50);
-
-    rightButton = attackButtonBase->getButton();
-    rightButton->retain();
-
-    this->addChild(attackButtonBase, CONTROLLERS_Z);
 }

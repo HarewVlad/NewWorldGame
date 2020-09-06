@@ -66,6 +66,8 @@ list(APPEND GAME_SOURCE
         Classes/SneakyButtonSkinnedBase.cpp
         Classes/SneakyButton.cpp
         Classes/SneakyJoystick.cpp
+        Classes/ControllerManager.cpp
+        Classes/PlayerLayer.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
@@ -78,6 +80,8 @@ list(APPEND GAME_HEADER
         Classes/SneakyButtonSkinnedBase.h
         Classes/SneakyButton.h
         Classes/SneakyJoystick.h
+        Classes/ControllerManager.h
+        Classes/PlayerLayer.h
      )
 
 if(ANDROID)

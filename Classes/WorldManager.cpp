@@ -26,7 +26,7 @@ void WorldManager::initTerrain(const std::string &grassFileName, const std::stri
     // Generate terrain
     float scale = 8;
     float offsetBlock = scale * 4;
-    float offsetY = -TERRAIN_WIDTH * TERRAIN_HEIGHT * 1.8f;
+    float offsetY = -TERRAIN_WIDTH * TERRAIN_HEIGHT * 1.6f;
     for (int i = 0; i < TERRAIN_HEIGHT; ++i) {
         for (int j = 0; j < TERRAIN_WIDTH; ++j) {
             if (j == TERRAIN_WIDTH - 1) {

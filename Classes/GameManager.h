@@ -32,6 +32,8 @@
 #include "WeatherManager.h"
 #include "Player.h"
 #include "SneakyInput.h"
+#include "ControllerManager.h"
+#include "PlayerLayer.h"
 
 const int MENU_Z = 5;
 const int WEATHER_Z = 10;
@@ -39,11 +41,19 @@ const int WORLD_Z = 0;
 const int PLAYER_Z = 1;
 const int CONTROLLERS_Z = 4;
 
-const float G = -100.0f;
+const float G = -300.0f;
 
 enum class GameState {
     MENU,
     PLAY
+};
+
+enum class Components {
+    WORLD,
+    PLAYER,
+    WEATHER,
+    CONTROLLERS,
+    MENU
 };
 
 class GameManager : public cocos2d::Scene
@@ -54,8 +64,8 @@ public:
 
     virtual bool init();
     void initJoystick();
-    void initPressButton();
-    
+    void initButton();
+
     CREATE_FUNC(GameManager);
 
     // My
@@ -69,9 +79,11 @@ private:
     WeatherManager *weatherManager;
     Player *player;
 
+    // Layers
+    PlayerLayer *playerLayer;
+
     // Controllers
-    SneakyJoystick *leftJoystick;
-    SneakyButton *rightButton;
+    ControllerManager *controllerManager;
 
     // State
     GameState currentGameState;

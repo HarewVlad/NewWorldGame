@@ -25,11 +25,14 @@ struct Block {
     cocos2d::Vec2 position;
 };
 
-struct WorldManager : public cocos2d::Node {
+struct WorldManager : public cocos2d::Layer {
     void init(const std::string &filename);
     void initTerrain(const std::string &grassFileName, const std::string &dirtFileName);
     inline WorldState getState() {
         return currentWorldState;
+    }
+    inline cocos2d::Sprite *getBackground() {
+        return background;
     }
 private:
     Block blocks[TERRAIN_HEIGHT][TERRAIN_WIDTH];
