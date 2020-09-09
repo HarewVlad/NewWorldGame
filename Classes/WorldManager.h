@@ -7,8 +7,8 @@
 
 #include "cocos2d.h"
 
-const int TERRAIN_WIDTH = 16;
-const int TERRAIN_HEIGHT = 16;
+const int TERRAIN_WIDTH = 2;
+const int TERRAIN_HEIGHT = 20;
 
 enum class WorldState {
     NONE
@@ -28,16 +28,28 @@ struct Block {
 struct WorldManager : public cocos2d::Node {
     void init(const std::string &filename);
     void initTerrain(const std::string &grassFileName, const std::string &dirtFileName);
-    inline WorldState getState() {
+    void update(const cocos2d::Vec2 &position);
+    inline WorldState getState() const {
         return currentWorldState;
     }
-    inline cocos2d::Sprite *getBackground() {
+    inline cocos2d::Sprite *getBackground() const {
         return background;
     }
 private:
-    Block blocks[TERRAIN_HEIGHT][TERRAIN_WIDTH];
+    Block generateBlock(BlockType type, float x, float y, float scale);
+    std::string getBlockSource(BlockType type) const;
+private:
+    Block blocks[TERRAIN_HEIGHT * TERRAIN_WIDTH];
     cocos2d::Sprite *background;
     WorldState currentWorldState;
+
+    // Block constants
+    float scale = 8;
+    float offsetBlock = scale * 4;
+    float offsetY = -TERRAIN_WIDTH * TERRAIN_HEIGHT * 1.6f;
+
+    // Distance from player to rightmost block
+    const float D = offsetBlock * TERRAIN_HEIGHT * 0.5f;
 };
 
 

@@ -21,42 +21,74 @@ void WorldManager::init(const std::string &filename) {
 void WorldManager::initTerrain(const std::string &grassFileName, const std::string &dirtFileName) {
     // Orientation
     auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
-    auto size = cocos2d::Director::getInstance()->getVisibleSize();
 
     // Generate terrain
-    float scale = 8;
-    float offsetBlock = scale * 4;
-    float offsetY = -TERRAIN_WIDTH * TERRAIN_HEIGHT * 1.6f;
     for (int i = 0; i < TERRAIN_HEIGHT; ++i) {
+        float x = origin.x + i * offsetBlock;
         for (int j = 0; j < TERRAIN_WIDTH; ++j) {
-            if (j == TERRAIN_WIDTH - 1) {
-                cocos2d::Sprite *grassBlock = cocos2d::Sprite::create(grassFileName);
-                cocos2d::PhysicsBody *body = cocos2d::PhysicsBody::createBox(grassBlock->getContentSize(),
-                                                                             cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f));
-                body->setDynamic(false);
+            float y = origin.y + offsetY + j * offsetBlock;
 
-                grassBlock->setScale(scale);
-                grassBlock->setPosition(cocos2d::Vec2{origin.x + i * offsetBlock, origin.y + offsetY + j * offsetBlock});
-                grassBlock->setPhysicsBody(body);
-                blocks[i][j] = Block {BlockType::GRASS, grassBlock, grassBlock->getPosition()};
-            } else {
-                cocos2d::Sprite *dirtBlock = cocos2d::Sprite::create(dirtFileName);
-                cocos2d::PhysicsBody *body = cocos2d::PhysicsBody::createBox(dirtBlock->getContentSize(),
-                                                                             cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f));
-                body->setDynamic(false);
-
-                dirtBlock->setScale(scale);
-                dirtBlock->setPosition(cocos2d::Vec2{origin.x + i * offsetBlock, origin.y + offsetY + j * offsetBlock});
-                dirtBlock->setPhysicsBody(body);
-                blocks[i][j] = Block {BlockType::DIRT, dirtBlock, dirtBlock->getPosition()};
-            }
+            blocks[i * TERRAIN_WIDTH + j] = j == TERRAIN_WIDTH - 1 ? generateBlock(BlockType::GRASS, x, y, scale) :
+                    generateBlock(BlockType::DIRT, x, y, scale);
         }
     }
 
     // Add blocks to node
     for (int i = 0; i < TERRAIN_HEIGHT; ++i) {
         for (int j = 0; j < TERRAIN_WIDTH; ++j) {
-            this->addChild(blocks[i][j].sprite, 1, i * TERRAIN_WIDTH + j);
+            this->addChild(blocks[i * TERRAIN_WIDTH + j] .sprite, 1);
         }
+    }
+}
+
+void WorldManager::update(const cocos2d::Vec2 &position) {
+    if (position.x + D > blocks[TERRAIN_HEIGHT - 1].position.x) {
+        // Remove leftmost blocks
+//        for (int j = 0; j < TERRAIN_WIDTH; ++j) {
+//            this->removeChild(blocks[j].sprite, true);
+//        }
+
+        // Move blocks to left by 1 column
+        // memcpy(&blocks[0], &blocks[TERRAIN_WIDTH], (TERRAIN_WIDTH * TERRAIN_HEIGHT - TERRAIN_WIDTH * 2) * sizeof(Block)); // First one and last one we don't copy
+
+        // Generate new blocks
+        auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
+
+        int i = TERRAIN_HEIGHT - 1;
+        float x = blocks[i * TERRAIN_WIDTH].position.x + offsetBlock;
+        for (int j = 0; j < TERRAIN_WIDTH; ++j) {
+            float y = origin.y + offsetY + j * offsetBlock;
+
+            blocks[i * TERRAIN_WIDTH + j] = j == TERRAIN_WIDTH - 1 ? generateBlock(BlockType::GRASS, x, y, scale) :
+                                            generateBlock(BlockType::DIRT, x, y, scale);
+        }
+
+        // Fill new rightmost blocks
+        for (int j = 0; j < TERRAIN_WIDTH; ++j) {
+            this->addChild(blocks[i * TERRAIN_WIDTH + j].sprite, 1);
+        }
+    }
+}
+
+Block WorldManager::generateBlock(BlockType type, float x, float y, float scale) {
+    cocos2d::Sprite *block = cocos2d::Sprite::create(getBlockSource(type));
+    cocos2d::PhysicsBody *body = cocos2d::PhysicsBody::createBox(block->getContentSize(),
+                                                                 cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f));
+    body->setDynamic(false);
+
+    block->setScale(scale);
+    block->setPosition(cocos2d::Vec2{x, y});
+    block->setPhysicsBody(body);
+    return Block {type, block, block->getPosition()};
+}
+
+std::string WorldManager::getBlockSource(BlockType type) const {
+    switch (type) {
+        case BlockType::GRASS:
+            return "grassBlock.png";
+        case BlockType::DIRT:
+            return "dirtBlock.png";
+        default:
+            throw std::runtime_error("block type doesn't exist");
     }
 }

@@ -175,7 +175,6 @@ void GameManager::update(float t) {
             worldManager->getBackground()->setPosition(player->getPosition());
         }
 
-
         // World
         {
             WorldState worldState = worldManager->getState();
@@ -183,6 +182,10 @@ void GameManager::update(float t) {
                 case WorldState::NONE:
                     break;
             }
+
+            worldManager->update(player->getPosition());
+
+            std::thread t(&WorldManager::update, this, player->getPosition());
         }
 
         // Weather
