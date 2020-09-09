@@ -28,44 +28,48 @@ void WorldManager::initTerrain(const std::string &grassFileName, const std::stri
         for (int j = 0; j < TERRAIN_WIDTH; ++j) {
             float y = origin.y + offsetY + j * offsetBlock;
 
-            blocks[i * TERRAIN_WIDTH + j] = j == TERRAIN_WIDTH - 1 ? generateBlock(BlockType::GRASS, x, y, scale) :
-                    generateBlock(BlockType::DIRT, x, y, scale);
+            Block block = j == TERRAIN_WIDTH - 1 ? generateBlock(BlockType::GRASS, x, y, scale) :
+                          generateBlock(BlockType::DIRT, x, y, scale);
+            blocks.push_back(block);
         }
     }
 
-    // Add blocks to node
-    for (int i = 0; i < TERRAIN_HEIGHT; ++i) {
-        for (int j = 0; j < TERRAIN_WIDTH; ++j) {
-            this->addChild(blocks[i * TERRAIN_WIDTH + j] .sprite, 1);
-        }
+    // Add blocks to the node
+    for (auto b : blocks) {
+        this->addChild(b.sprite, 1);
     }
 }
 
 void WorldManager::update(const cocos2d::Vec2 &position) {
-    if (position.x + D > blocks[TERRAIN_HEIGHT - 1].position.x) {
-        // Remove leftmost blocks
-//        for (int j = 0; j < TERRAIN_WIDTH; ++j) {
-//            this->removeChild(blocks[j].sprite, true);
-//        }
-
-        // Move blocks to left by 1 column
-        // memcpy(&blocks[0], &blocks[TERRAIN_WIDTH], (TERRAIN_WIDTH * TERRAIN_HEIGHT - TERRAIN_WIDTH * 2) * sizeof(Block)); // First one and last one we don't copy
-
-        // Generate new blocks
+    if (position.x + D > blocks.back().position.x) {
         auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
 
-        int i = TERRAIN_HEIGHT - 1;
-        float x = blocks[i * TERRAIN_WIDTH].position.x + offsetBlock;
-        for (int j = 0; j < TERRAIN_WIDTH; ++j) {
-            float y = origin.y + offsetY + j * offsetBlock;
+        for (int i = 0; i < chunkSize; ++i)
+        {
+            float x = blocks.back().position.x + offsetBlock;
+            for (int j = 0; j < TERRAIN_WIDTH; ++j) {
+                float y = origin.y + offsetY + j * offsetBlock;
 
-            blocks[i * TERRAIN_WIDTH + j] = j == TERRAIN_WIDTH - 1 ? generateBlock(BlockType::GRASS, x, y, scale) :
-                                            generateBlock(BlockType::DIRT, x, y, scale);
+                Block block = j == TERRAIN_WIDTH - 1 ? generateBlock(BlockType::GRASS, x, y, scale) :
+                              generateBlock(BlockType::DIRT, x, y, scale);
+                blocks.push_back(block);
+                this->addChild(block.sprite, 1);
+            }
         }
+    } else if (position.x - D < blocks.front().position.x) {
+        auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
 
-        // Fill new rightmost blocks
-        for (int j = 0; j < TERRAIN_WIDTH; ++j) {
-            this->addChild(blocks[i * TERRAIN_WIDTH + j].sprite, 1);
+        for (int i = 0; i < chunkSize; ++i)
+        {
+            float x = blocks.front().position.x - offsetBlock;
+            for (int j = 0; j < TERRAIN_WIDTH; ++j) {
+                float y = origin.y + offsetY + j * offsetBlock;
+
+                Block block = j == TERRAIN_WIDTH - 1 ? generateBlock(BlockType::GRASS, x, y, scale) :
+                              generateBlock(BlockType::DIRT, x, y, scale);
+                blocks.push_front(block);
+                this->addChild(block.sprite, 1);
+            }
         }
     }
 }

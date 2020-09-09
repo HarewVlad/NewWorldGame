@@ -39,7 +39,8 @@ private:
     Block generateBlock(BlockType type, float x, float y, float scale);
     std::string getBlockSource(BlockType type) const;
 private:
-    Block blocks[TERRAIN_HEIGHT * TERRAIN_WIDTH];
+    std::list<Block> blocks;
+    // Block blocks[TERRAIN_HEIGHT * TERRAIN_WIDTH];
     cocos2d::Sprite *background;
     WorldState currentWorldState;
 
@@ -47,9 +48,10 @@ private:
     float scale = 8;
     float offsetBlock = scale * 4;
     float offsetY = -TERRAIN_WIDTH * TERRAIN_HEIGHT * 1.6f;
+    int chunkSize = 32; // When player triggers terrain generation, generates chunk of 16 blocks
 
     // Distance from player to rightmost block
-    const float D = offsetBlock * TERRAIN_HEIGHT * 0.5f;
+    const float D = offsetBlock * chunkSize * 0.8f;
 };
 
 

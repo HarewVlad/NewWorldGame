@@ -184,8 +184,6 @@ void GameManager::update(float t) {
             }
 
             worldManager->update(player->getPosition());
-
-            std::thread t(&WorldManager::update, this, player->getPosition());
         }
 
         // Weather
