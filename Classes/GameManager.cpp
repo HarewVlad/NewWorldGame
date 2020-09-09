@@ -53,15 +53,15 @@ bool GameManager::init()
     {
         // Sprite frame cache
         {
-            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("enemy_idle.plist");
-            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("enemy_walk.plist");
+            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_idle.plist");
+            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_walk.plist");
         }
     }
 
     // Debug
     {
         this->getPhysicsWorld()->setGravity(cocos2d::Vec2(0, G));
-        this->getPhysicsWorld()->setDebugDrawMask(0xffff);
+        // this->getPhysicsWorld()->setDebugDrawMask(0xffff);
     }
 
     auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -94,14 +94,14 @@ bool GameManager::init()
     // Player
     {
         player = new Player();
-        player->init("Satyr_03_Idle_000.png", origin + visibleSize * 0.5f);
+        player->init("adventurer.png", origin + visibleSize * 0.5f);
 
         // Animations
         {
             // Idle
             {
-                auto frames = getSpriteFrames("Satyr_03_Idle_%03d.png", 12);
-                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 12.0f);
+                auto frames = getSpriteFrames("adventurer-idle-%02d.png", 4);
+                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 4.0f);
                 animation->retain();
 
                 player->addAnimation(PlayerState::IDLE, animation);
@@ -109,8 +109,8 @@ bool GameManager::init()
 
             // Run
             {
-                auto frames = getSpriteFrames("Satyr_03_Walking_%03d.png", 18);
-                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 18.0f);
+                auto frames = getSpriteFrames("adventurer-walk-%02d.png", 6);
+                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 6.0f);
                 animation->retain();
 
                 player->addAnimation(PlayerState::RUN, animation);

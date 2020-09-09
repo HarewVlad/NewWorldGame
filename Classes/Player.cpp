@@ -49,6 +49,9 @@ void Player::setState(PlayerState state) {
         case PlayerState::RUN:
             setRunState();
             break;
+        case PlayerState::JUMP:
+            setJumpState();
+            break;
     }
 }
 void Player::setAttackState() {
@@ -57,7 +60,8 @@ void Player::setAttackState() {
     }
 }
 void Player::setIdleState() {
-    if (currentPlayerState != PlayerState::IDLE) {
+    if (currentPlayerState != PlayerState::IDLE &&
+        currentPlayerState != PlayerState::ATTACK) {
         // Change state
         currentPlayerState = PlayerState::IDLE;
 
@@ -69,7 +73,8 @@ void Player::setIdleState() {
     }
 }
 void Player::setRunState() {
-    if (currentPlayerState != PlayerState::RUN) {
+    if (currentPlayerState != PlayerState::RUN &&
+        currentPlayerState != PlayerState::ATTACK) {
         // Change state
         currentPlayerState = PlayerState::RUN;
 
@@ -81,9 +86,29 @@ void Player::setRunState() {
     }
 }
 
+void Player::setJumpState() {
+    if (currentPlayerState != PlayerState::JUMP &&
+        currentPlayerState != PlayerState::ATTACK) {
+        // Change state
+        currentPlayerState = PlayerState::JUMP;
+
+        // Run animation
+        sprite->stopAllActions();
+        auto animation = animations[static_cast<int>(PlayerState::JUMP)];
+        auto animate = cocos2d::Animate::create(animation);
+        sprite->runAction(cocos2d::RepeatForever::create(animate));
+    }
+}
+
 void Player::move(float t, cocos2d::Vec2 &position) {
+    if (position.y < 0) { position.y = 0; }
+
     auto body = sprite->getPhysicsBody();
     body->applyForce(position * PLAYER_SPEED);
 
-    setState(PlayerState::RUN);
+    if (position.y > 0) {
+        setState(PlayerState::JUMP);
+    } else {
+        setState(PlayerState::RUN);
+    }
 }

@@ -11,7 +11,8 @@ enum class PlayerState {
     NONE,
     IDLE,
     RUN,
-    ATTACK
+    ATTACK,
+    JUMP
 };
 
 struct Player : public cocos2d::Node {
@@ -29,16 +30,18 @@ struct Player : public cocos2d::Node {
         return sprite->getPosition();
     }
     void setState(PlayerState state);
+    void move(float t, cocos2d::Vec2 &position);
+private:
     void setAttackState();
     void setIdleState();
     void setRunState();
-    void move(float t, cocos2d::Vec2 &position);
+    void setJumpState();
 private:
     cocos2d::Sprite *sprite;
     std::unordered_map<int, cocos2d::Animation *> animations;
     PlayerState currentPlayerState;
 
-    const int PLAYER_SCALE = 1;
+    const float PLAYER_SCALE = 2.0f;
     const float PLAYER_SPEED = 200.0f;
 };
 

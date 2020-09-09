@@ -4,63 +4,63 @@
     <dict>
         <key>frames</key>
         <dict>
-            <key>woodcutter_idle_000.png</key>
+            <key>adventurer-idle-00.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{-9,-7}</string>
+                <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{28,34}</string>
+                <string>{50,37}</string>
                 <key>spriteSourceSize</key>
-                <string>{46,48}</string>
+                <string>{50,37}</string>
                 <key>textureRect</key>
-                <string>{{1,1},{28,34}}</string>
+                <string>{{0,0},{50,37}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>woodcutter_idle_001.png</key>
+            <key>adventurer-idle-01.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{-7,-7}</string>
+                <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{28,34}</string>
+                <string>{50,37}</string>
                 <key>spriteSourceSize</key>
-                <string>{46,48}</string>
+                <string>{50,37}</string>
                 <key>textureRect</key>
-                <string>{{1,37},{28,34}}</string>
+                <string>{{50,0},{50,37}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>woodcutter_idle_002.png</key>
+            <key>adventurer-idle-02.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{-6,-7}</string>
+                <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{28,34}</string>
+                <string>{50,37}</string>
                 <key>spriteSourceSize</key>
-                <string>{46,48}</string>
+                <string>{50,37}</string>
                 <key>textureRect</key>
-                <string>{{1,73},{28,34}}</string>
+                <string>{{100,0},{50,37}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>woodcutter_idle_003.png</key>
+            <key>adventurer-idle-03.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
-                <string>{-4,-7}</string>
+                <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{28,34}</string>
+                <string>{50,37}</string>
                 <key>spriteSourceSize</key>
-                <string>{46,48}</string>
+                <string>{50,37}</string>
                 <key>textureRect</key>
-                <string>{{1,109},{28,34}}</string>
+                <string>{{150,0},{50,37}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -74,13 +74,13 @@
             <key>premultiplyAlpha</key>
             <false/>
             <key>realTextureFileName</key>
-            <string>woodcutter_idle.png</string>
+            <string>adventurer_idle.png</string>
             <key>size</key>
-            <string>{30,144}</string>
+            <string>{200,37}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:d290b5c1548d7e0695719846d5aaaffc:9543dabfe67c155d70572da6d0edad54:5c54903daa7aad8026ffba5a5d812cf3$</string>
+            <string>$TexturePacker:SmartUpdate:85c3515b861af769a085a41b576291c0:20c8218ca124f75a1a7745c88b3e39d1:d2521083f257f7d0c4b42abcb5481790$</string>
             <key>textureFileName</key>
-            <string>woodcutter_idle.png</string>
+            <string>adventurer_idle.png</string>
         </dict>
     </dict>
 </plist>

@@ -2,6 +2,9 @@
 // Created by Vlad on 03.09.2020.
 //
 
+// TODO: save current world somewhere
+// TODO: destroy not visible tiles
+
 #ifndef PROJ_ANDROID_WORLDMANAGER_H
 #define PROJ_ANDROID_WORLDMANAGER_H
 
@@ -45,13 +48,13 @@ private:
     WorldState currentWorldState;
 
     // Block constants
-    float scale = 8;
-    float offsetBlock = scale * 4;
-    float offsetY = -TERRAIN_WIDTH * TERRAIN_HEIGHT * 1.6f;
-    int chunkSize = 32; // When player triggers terrain generation, generates chunk of 16 blocks
+    float BLOCK_SCALE = 4;
+    float BLOCK_OFFSET = BLOCK_SCALE * 4;
+    float BLOCK_OFFSET_Y = -TERRAIN_WIDTH * TERRAIN_HEIGHT * 1.6f;
+    int CHUNK_SIZE = 32; // When player triggers terrain generation, generates chunk of 16 blocks
 
-    // Distance from player to rightmost block
-    const float D = offsetBlock * chunkSize * 0.8f;
+    // Distance from player to block position, at which terrain gen starting
+    const float D = BLOCK_OFFSET * CHUNK_SIZE * 0.8f;
 };
 
 
