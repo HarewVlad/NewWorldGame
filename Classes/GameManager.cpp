@@ -191,12 +191,10 @@ void GameManager::update(float t) {
             auto joystickPosition = controllerManager->getStickPosition().getNormalized();
             auto isButtonPressed = controllerManager->getValue();
 
-            if (!joystickPosition.isZero()) { // Movement
+            if (!joystickPosition.isZero()) {
                 player->move(t, joystickPosition);
             } else {
-                if (player->getState() != PlayerState::ATTACK) {
-                    player->setState(PlayerState::IDLE);
-                }
+                player->setState(PlayerState::IDLE);
             }
 
             if (isButtonPressed) {

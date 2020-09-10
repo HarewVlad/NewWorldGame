@@ -67,6 +67,7 @@ void Player::setAttackState() {
         auto animation = animations[static_cast<int>(PlayerState::ATTACK)];
         auto animate = cocos2d::Animate::create(animation);
         auto callbackAnimate = cocos2d::CallFunc::create([this]() {
+            currentPlayerState = PlayerState::NONE;
             setState(PlayerState::IDLE);
         });
         auto seq = cocos2d::Sequence::create(animate, callbackAnimate, nullptr);
@@ -143,10 +144,8 @@ void Player::move(float t, cocos2d::Vec2 &position) {
         setState(PlayerState::RUN);
     }
 
-    // Change position
-    if (bodyVelocity.y == 0 && position.x < 0.3f && position.y >= 0.5f) { // Jump UP
-        body->applyForce(cocos2d::Vec2(0, PLAYER_JUMP_SPEED));
-    } else if (bodyVelocity.y == 0 && position.x >= 0.5f && position.y >= 0.5f) { // Jump N-E
+    // Change position // TODO: sometimes stuck on even surface mb set yy to 0.01f
+    if (bodyVelocity.y == 0 && position.x >= 0.5f && position.y >= 0.5f) { // Jump N-E
         body->applyForce(cocos2d::Vec2(PLAYER_WALK_SPEED, PLAYER_JUMP_SPEED));
     } else if (bodyVelocity.y == 0 && position.x <= -0.5f && position.y >= 0.5f) { // Jump N-W
         body->applyForce(cocos2d::Vec2(-PLAYER_WALK_SPEED, PLAYER_JUMP_SPEED));
