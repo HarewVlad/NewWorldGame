@@ -66,9 +66,3 @@ void ControllerManager::initButton() {
     sneakyButton->retain();
     this->addChild(sneakyButtonBase);
 }
-
-void ControllerManager::updateControllersPosition() {
-    auto screenSize = Director::getInstance()->getVisibleSize();
-
-    sneakyJoystickBase->setPosition(screenSize.width / 2.5f, -screenSize.height / 4.0f);
-}

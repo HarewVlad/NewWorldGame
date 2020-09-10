@@ -16,6 +16,7 @@ enum class PlayerState {
     FALL
 };
 
+// TODO: inheritance from Character
 struct Player : public cocos2d::Node {
     void init(const std::string &filename, const cocos2d::Vec2 &position);
     void show(float d = 0);
@@ -33,6 +34,7 @@ struct Player : public cocos2d::Node {
     void setState(PlayerState state);
     void move(float t, cocos2d::Vec2 &position);
     void attack(float t);
+    void update(float t);
 private:
     void setAttackState();
     void setIdleState();

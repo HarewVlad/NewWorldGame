@@ -32,7 +32,7 @@ void Player::hide(float d) {
     auto hideAction = cocos2d::FadeOut::create(d);
     sprite->runAction(hideAction);
 }
-// NOTE: rofling with VIKA in discord, check this becouse it can be wrong
+
 void Player::addAnimation(PlayerState state, cocos2d::Animation *animation) {
     animations.insert(std::pair<int, cocos2d::Animation *>(static_cast<int>(state), animation));
 }
@@ -58,6 +58,7 @@ void Player::setState(PlayerState state) {
             break;
     }
 }
+
 void Player::setAttackState() {
     if (currentPlayerState != PlayerState::ATTACK) {
         // Change state
@@ -74,6 +75,7 @@ void Player::setAttackState() {
         sprite->runAction(seq);
     }
 }
+
 void Player::setIdleState() {
     if (currentPlayerState != PlayerState::IDLE &&
         currentPlayerState != PlayerState::ATTACK) {
@@ -87,6 +89,7 @@ void Player::setIdleState() {
         sprite->runAction(cocos2d::RepeatForever::create(animate));
     }
 }
+
 void Player::setRunState() {
     if (currentPlayerState != PlayerState::RUN &&
         currentPlayerState != PlayerState::ATTACK) {
@@ -135,14 +138,6 @@ void Player::move(float t, cocos2d::Vec2 &position) {
 
     auto body = sprite->getPhysicsBody();
     auto bodyVelocity = body->getVelocity();
-    // Set state // TODO: possible move this part to player->update(t);
-    if (bodyVelocity.y > 0) {
-        setState(PlayerState::JUMP);
-    } else if (bodyVelocity.y < 0){
-        setState(PlayerState::FALL);
-    } else {
-        setState(PlayerState::RUN);
-    }
 
     // Change position // TODO: sometimes stuck on even surface mb set yy to 0.01f
     if (bodyVelocity.y == 0 && position.x >= 0.5f && position.y >= 0.5f) { // Jump N-E
@@ -161,4 +156,19 @@ void Player::attack(float t) {
     setState(PlayerState::ATTACK);
 
     // TODO: actual attack
+}
+
+void Player::update(float t) {
+    auto body = sprite->getPhysicsBody();
+    auto bodyVelocity = body->getVelocity();
+
+    if (bodyVelocity.y > 0.5f) {
+        setState(PlayerState::JUMP);
+    } else if (bodyVelocity.y < -0.5f){
+        setState(PlayerState::FALL);
+    } else if (!bodyVelocity.isZero()){
+        setState(PlayerState::RUN);
+    } else {
+        setState(PlayerState::IDLE);
+    }
 }

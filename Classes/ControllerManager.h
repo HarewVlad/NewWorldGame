@@ -19,7 +19,6 @@ struct ControllerManager : public cocos2d::Node {
     inline void setValue(bool value) {
         sneakyButton->setValue(value);
     }
-    void updateControllersPosition();
 private:
     void initJoystick();
     void initButton();

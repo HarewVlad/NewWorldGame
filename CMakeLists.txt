@@ -68,6 +68,7 @@ list(APPEND GAME_SOURCE
         Classes/SneakyJoystick.cpp
         Classes/ControllerManager.cpp
         Classes/PlayerLayer.cpp
+        Classes/Enemy.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
@@ -82,6 +83,7 @@ list(APPEND GAME_HEADER
         Classes/SneakyJoystick.h
         Classes/ControllerManager.h
         Classes/PlayerLayer.h
+        Classes/Enemy.h
      )
 
 if(ANDROID)

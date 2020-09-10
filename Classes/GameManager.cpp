@@ -58,6 +58,7 @@ bool GameManager::init()
             cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_jump.plist");
             cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_fall.plist");
             cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_attack1.plist");
+            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_attack2.plist");
         }
     }
 
@@ -143,6 +144,16 @@ bool GameManager::init()
                 auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 5.0f);
                 animation->retain();
 
+                // TODO: make different attacks states
+                // player->addAnimation(PlayerState::ATTACK, animation);
+            }
+
+            // Attack2
+            {
+                auto frames = getSpriteFrames("adventurer-attack2-%02d.png", 6);
+                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 6.0f);
+                animation->retain();
+
                 player->addAnimation(PlayerState::ATTACK, animation);
             }
         }
@@ -193,13 +204,13 @@ void GameManager::update(float t) {
 
             if (!joystickPosition.isZero()) {
                 player->move(t, joystickPosition);
-            } else {
-                player->setState(PlayerState::IDLE);
             }
 
             if (isButtonPressed) {
                 player->attack(t);
             }
+
+            player->update(t);
 
             controllerManager->setValue(false); // 144 fps causes sneakyButton to register multiple presses on one press
         }
