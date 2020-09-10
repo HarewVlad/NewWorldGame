@@ -48,8 +48,8 @@ private:
     WorldState currentWorldState;
 
     // Block constants
-    float BLOCK_SCALE = 4;
-    float BLOCK_OFFSET = BLOCK_SCALE * 4;
+    float BLOCK_SCALE = 4.0f;
+    float BLOCK_OFFSET = BLOCK_SCALE * 4.0f;
     float BLOCK_OFFSET_Y = -TERRAIN_WIDTH * TERRAIN_HEIGHT * 1.6f;
     int CHUNK_SIZE = 32; // When player triggers terrain generation, generates chunk of 16 blocks
 

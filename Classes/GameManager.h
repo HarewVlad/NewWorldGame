@@ -63,8 +63,6 @@ public:
     static cocos2d::Scene* createScene();
 
     virtual bool init();
-    void initJoystick();
-    void initButton();
 
     CREATE_FUNC(GameManager);
 

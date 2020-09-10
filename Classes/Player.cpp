@@ -16,6 +16,7 @@ void Player::init(const std::string &filename, const cocos2d::Vec2 &position) {
     body->setRotationEnable(false);
     body->setDynamic(true);
     body->setLinearDamping(1.0f);
+    body->setVelocityLimit(PLAYER_WALK_SPEED);
     sprite->setPhysicsBody(body);
 
     // Add components to node
@@ -52,11 +53,24 @@ void Player::setState(PlayerState state) {
         case PlayerState::JUMP:
             setJumpState();
             break;
+        case PlayerState::FALL:
+            setFallState();
+            break;
     }
 }
 void Player::setAttackState() {
     if (currentPlayerState != PlayerState::ATTACK) {
+        // Change state
         currentPlayerState = PlayerState::ATTACK;
+
+        // Run animation
+        auto animation = animations[static_cast<int>(PlayerState::ATTACK)];
+        auto animate = cocos2d::Animate::create(animation);
+        auto callbackAnimate = cocos2d::CallFunc::create([this]() {
+            setState(PlayerState::IDLE);
+        });
+        auto seq = cocos2d::Sequence::create(animate, callbackAnimate, nullptr);
+        sprite->runAction(seq);
     }
 }
 void Player::setIdleState() {
@@ -100,15 +114,52 @@ void Player::setJumpState() {
     }
 }
 
+void Player::setFallState() {
+    if (currentPlayerState != PlayerState::FALL &&
+        currentPlayerState != PlayerState::ATTACK) {
+        // Change state
+        currentPlayerState = PlayerState::FALL;
+
+        // Run animation
+        sprite->stopAllActions();
+        auto animation = animations[static_cast<int>(PlayerState::FALL)];
+        auto animate = cocos2d::Animate::create(animation);
+        sprite->runAction(cocos2d::RepeatForever::create(animate));
+    }
+}
+
 void Player::move(float t, cocos2d::Vec2 &position) {
-    if (position.y < 0) { position.y = 0; }
+    // Flip
+    sprite->setFlippedX(position.x < 0);
 
     auto body = sprite->getPhysicsBody();
-    body->applyForce(position * PLAYER_SPEED);
-
-    if (position.y > 0) {
+    auto bodyVelocity = body->getVelocity();
+    // Set state // TODO: possible move this part to player->update(t);
+    if (bodyVelocity.y > 0) {
         setState(PlayerState::JUMP);
+    } else if (bodyVelocity.y < 0){
+        setState(PlayerState::FALL);
     } else {
         setState(PlayerState::RUN);
     }
+
+    // Change position
+    if (bodyVelocity.y == 0 && position.x < 0.3f && position.y >= 0.5f) { // Jump UP
+        body->applyForce(cocos2d::Vec2(0, PLAYER_JUMP_SPEED));
+    } else if (bodyVelocity.y == 0 && position.x >= 0.5f && position.y >= 0.5f) { // Jump N-E
+        body->applyForce(cocos2d::Vec2(PLAYER_WALK_SPEED, PLAYER_JUMP_SPEED));
+    } else if (bodyVelocity.y == 0 && position.x <= -0.5f && position.y >= 0.5f) { // Jump N-W
+        body->applyForce(cocos2d::Vec2(-PLAYER_WALK_SPEED, PLAYER_JUMP_SPEED));
+    } else if (position.x > 0) { // Move right
+        body->applyForce(cocos2d::Vec2(PLAYER_WALK_SPEED, 0));
+    } else { // Move left
+        body->applyForce(cocos2d::Vec2(-PLAYER_WALK_SPEED, 0));
+    }
+}
+
+void Player::attack(float t) {
+    // Set state
+    setState(PlayerState::ATTACK);
+
+    // TODO: actual attack
 }

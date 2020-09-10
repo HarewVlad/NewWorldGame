@@ -10,13 +10,14 @@
 
 struct ControllerManager : public cocos2d::Node {
     void init(const cocos2d::Vec2 &position);
-
-
     inline cocos2d::Vec2 getStickPosition() const {
         return sneakyJoystick->getStickPosition();
     }
     inline bool getValue() const {
         return sneakyButton->getValue();
+    }
+    inline void setValue(bool value) {
+        sneakyButton->setValue(value);
     }
     void updateControllersPosition();
 private:

@@ -55,6 +55,9 @@ bool GameManager::init()
         {
             cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_idle.plist");
             cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_walk.plist");
+            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_jump.plist");
+            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_fall.plist");
+            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_attack1.plist");
         }
     }
 
@@ -115,6 +118,33 @@ bool GameManager::init()
 
                 player->addAnimation(PlayerState::RUN, animation);
             }
+
+            // Jump
+            {
+                auto frames = getSpriteFrames("adventurer-jump-%02d.png", 4);
+                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 4.0f);
+                animation->retain();
+
+                player->addAnimation(PlayerState::JUMP, animation);
+            }
+
+            // Fall
+            {
+                auto frames = getSpriteFrames("adventurer-fall-%02d.png", 2);
+                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 2.0f);
+                animation->retain();
+
+                player->addAnimation(PlayerState::FALL, animation);
+            }
+
+            // Attack1
+            {
+                auto frames = getSpriteFrames("adventurer-attack1-%02d.png", 5);
+                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 5.0f);
+                animation->retain();
+
+                player->addAnimation(PlayerState::ATTACK, animation);
+            }
         }
 
         // Player Layer
@@ -156,7 +186,7 @@ void GameManager::update(float t) {
         }
     } else if (currentGameState == GameState::PLAY)
     {
-        // Movement
+        // Player movement and attack
         {
             auto joystickPosition = controllerManager->getStickPosition().getNormalized();
             auto isButtonPressed = controllerManager->getValue();
@@ -168,6 +198,12 @@ void GameManager::update(float t) {
                     player->setState(PlayerState::IDLE);
                 }
             }
+
+            if (isButtonPressed) {
+                player->attack(t);
+            }
+
+            controllerManager->setValue(false); // 144 fps causes sneakyButton to register multiple presses on one press
         }
 
         // Follow
