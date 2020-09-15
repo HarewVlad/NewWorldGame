@@ -6,19 +6,18 @@
 #define PROJ_ANDROID_PLAYER_H
 
 #include "cocos2d.h"
+#include "Level.h"
 
 enum class PlayerState {
     NONE,
     IDLE,
-    RUN,
+    MOVE,
     ATTACK,
-    JUMP,
-    FALL
 };
 
 // TODO: inheritance from Character
 struct Player : public cocos2d::Node {
-    void init(const std::string &filename, const cocos2d::Vec2 &position);
+    void init(const std::string &filename);
     void show(float d = 0);
     void hide(float d = 0);
     void addAnimation(PlayerState state, cocos2d::Animation *animation);
@@ -31,24 +30,31 @@ struct Player : public cocos2d::Node {
     inline cocos2d::Vec2 getPosition() {
         return sprite->getPosition();
     }
+    inline void setSpawnData(const PlayerSpawnData &playerSpawnData) {
+        sprite->setPosition(playerSpawnData.position);
+        currentLineIndex = playerSpawnData.lineIndex;
+    }
+    inline int getCurrentLine() const {
+        return currentLineIndex;
+    }
     void setState(PlayerState state);
-    void move(float t, cocos2d::Vec2 &position);
+    void moveToLine(float t, Line *line);
+    void moveForward(float t, float value);
     void attack(float t);
     void update(float t);
 private:
     void setAttackState();
     void setIdleState();
     void setRunState();
-    void setJumpState();
-    void setFallState();
 private:
     cocos2d::Sprite *sprite;
     std::unordered_map<int, cocos2d::Animation *> animations;
+    Level *currentLevel;
+    int currentLineIndex;
     PlayerState currentPlayerState;
 
     const float PLAYER_SCALE = 2.0f;
-    const float PLAYER_WALK_SPEED = 200.0f;
-    const float PLAYER_JUMP_SPEED = 2000.0f;
+    const float PLAYER_SPEED = 100.0f;
 };
 
 

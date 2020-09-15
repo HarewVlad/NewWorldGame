@@ -58,8 +58,8 @@ endif()
 list(APPEND GAME_SOURCE
      Classes/AppDelegate.cpp
         Classes/GameManager.cpp
-        Classes/MenuManager.cpp
-        Classes/WorldManager.cpp
+        Classes/StartMenuManager.cpp
+        Classes/LevelManager.cpp
         Classes/WeatherManager.cpp
         Classes/Player.cpp
         Classes/SneakyJoystickSkinnedBase.cpp
@@ -67,14 +67,15 @@ list(APPEND GAME_SOURCE
         Classes/SneakyButton.cpp
         Classes/SneakyJoystick.cpp
         Classes/ControllerManager.cpp
-        Classes/PlayerLayer.cpp
         Classes/Enemy.cpp
+        Classes/Level.cpp
+        Classes/IngameMenuManager.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
         Classes/GameManager.h
-        Classes/MenuManager.h
-        Classes/WorldManager.h
+        Classes/StartMenuManager.h
+        Classes/LevelManager.h
         Classes/WeatherManager.h
         Classes/Player.h
         Classes/SneakyJoystickSkinnedBase.h
@@ -82,8 +83,9 @@ list(APPEND GAME_HEADER
         Classes/SneakyButton.h
         Classes/SneakyJoystick.h
         Classes/ControllerManager.h
-        Classes/PlayerLayer.h
         Classes/Enemy.h
+        Classes/Level.h
+        Classes/IngameMenuManager.h
      )
 
 if(ANDROID)

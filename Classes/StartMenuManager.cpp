@@ -2,9 +2,9 @@
 // Created by Vlad on 03.09.2020.
 //
 
-#include "MenuManager.h"
+#include "StartMenuManager.h"
 
-void MenuManager::init(const std::string &filename) {
+void StartMenuManager::init(const std::string &filename) {
     // Orientation
     auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
     auto size = cocos2d::Director::getInstance()->getVisibleSize();
@@ -20,10 +20,10 @@ void MenuManager::init(const std::string &filename) {
 
     auto start = cocos2d::MenuItemLabel::create(startLabel);
     start->setPositionY(24);
-    start->setCallback(CC_CALLBACK_1(MenuManager::menuStartCallback, this));
+    start->setCallback(CC_CALLBACK_1(StartMenuManager::menuStartCallback, this));
     auto exit = cocos2d::MenuItemLabel::create(exitLabel);
     exit->setPositionY(0);
-    exit->setCallback(CC_CALLBACK_1(MenuManager::menuExitCallback, this));
+    exit->setCallback(CC_CALLBACK_1(StartMenuManager::menuExitCallback, this));
 
     menu = cocos2d::Menu::create();
     menu->addChild(start);
@@ -33,17 +33,27 @@ void MenuManager::init(const std::string &filename) {
     this->addChild(background);
     this->addChild(menu);
 }
-void MenuManager::menuStartCallback(cocos2d::Ref *sender) {
-    // Disable menu
-    menu->setEnabled(false);
 
-    // Hide menu
+void StartMenuManager::menuStartCallback(cocos2d::Ref *sender) {
+    currentState = StartMenuState::START;
+}
+void StartMenuManager::menuExitCallback(cocos2d::Ref *sender) {
+    currentState = StartMenuState::EXIT;
+}
+
+void StartMenuManager::show() {
+    background->runAction(cocos2d::FadeIn::create(1.0f));
+    menu->runAction(cocos2d::FadeIn::create(1.0f));
+
+    menu->setEnabled(true);
+
+    // Set initial state
+    currentState = StartMenuState::IDLE;
+}
+
+void StartMenuManager::hide() {
     background->runAction(cocos2d::FadeOut::create(1.0f));
     menu->runAction(cocos2d::FadeOut::create(1.0f));
 
-    currentMenuState = MenuState::START;
-}
-void MenuManager::menuExitCallback(cocos2d::Ref *sender) {
-    // do some stuff
-    currentMenuState = MenuState::EXIT;
+    menu->setEnabled(false);
 }
