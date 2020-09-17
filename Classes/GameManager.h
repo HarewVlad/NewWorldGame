@@ -3,20 +3,22 @@
 
 #include "cocos2d.h"
 
-#include "StartMenuManager.h"
-#include "IngameMenuManager.h"
+#include "StartMenu.h"
+#include "IngameMenu.h"
 #include "LevelManager.h"
 #include "WeatherManager.h"
 #include "Player.h"
 #include "SneakyInput.h"
 #include "ControllerManager.h"
 #include "LevelManager.h"
+#include "GameOverMenu.h"
 
 const float G = -300.0f;
 
 enum class GameState {
     MENU,
-    PLAY
+    PLAY,
+    GAME_OVER
 };
 
 enum class Components {
@@ -25,6 +27,7 @@ enum class Components {
     WEATHER,
     CONTROLLERS,
     INGAME_MENU,
+    GAME_OVER_MENU,
     MENU
 };
 
@@ -40,11 +43,12 @@ public:
 
     // My
     void update(float t);
-
+    bool onPhysicsContactBegin(cocos2d::PhysicsContact &contact); // TODO: mb create different class for collision managment
 private:
     // Objects
-    StartMenuManager *startMenuManager;
-    IngameMenuManager *ingameMenuManager;
+    StartMenu *startMenu;
+    IngameMenu *ingameMenu;
+    GameOverMenu *gameOverMenu;
     LevelManager *levelManager;
     WeatherManager *weatherManager;
     Player *player;
@@ -53,7 +57,7 @@ private:
     ControllerManager *controllerManager;
 
     // State
-    GameState currentGameState;
+    GameState currentState;
 };
 
 #endif // __GAMEMANAGER_H__

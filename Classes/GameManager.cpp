@@ -50,18 +50,26 @@ bool GameManager::init()
 
     // Start menu
     {
-        startMenuManager = new StartMenuManager();
-        startMenuManager->init("menuBackground.jpg");
+        startMenu = new StartMenu();
+        startMenu->init("menuBackground.jpg");
 
-        this->addChild(startMenuManager, static_cast<int>(Components::MENU), static_cast<int>(Components::MENU));
+        this->addChild(startMenu, static_cast<int>(Components::MENU), static_cast<int>(Components::MENU));
     }
 
     // Ingame menu
     {
-        ingameMenuManager = new IngameMenuManager();
-        (void)ingameMenuManager->init();
+        ingameMenu = new IngameMenu();
+        (void)ingameMenu->init();
 
-        this->addChild(ingameMenuManager, static_cast<int>(Components::INGAME_MENU), static_cast<int>(Components::INGAME_MENU));
+        this->addChild(ingameMenu, static_cast<int>(Components::INGAME_MENU), static_cast<int>(Components::INGAME_MENU));
+    }
+
+    // Game over menu
+    {
+        gameOverMenu = new GameOverMenu();
+        (void)gameOverMenu->init();
+
+        this->addChild(gameOverMenu, static_cast<int>(Components::GAME_OVER_MENU), static_cast<int>(Components::GAME_OVER_MENU));
     }
 
     // Levels
@@ -110,7 +118,9 @@ bool GameManager::init()
                 auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 6.0f);
                 animation->retain();
 
-                player->addAnimation(PlayerState::MOVE, animation);
+                player->addAnimation(PlayerState::MOVE_FORWARD, animation);
+                player->addAnimation(PlayerState::MOVE_RIGHT, animation);
+                player->addAnimation(PlayerState::MOVE_LEFT, animation);
             }
 
             // Attack
@@ -134,14 +144,21 @@ bool GameManager::init()
         this->addChild(controllerManager, static_cast<int>(Components::CONTROLLERS), static_cast<int>(Components::CONTROLLERS));
     }
 
+    // Contact listener
+    {
+        auto contactListener = cocos2d::EventListenerPhysicsContact::create();
+        contactListener->onContactBegin = CC_CALLBACK_1(GameManager::onPhysicsContactBegin, this);
+        _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+    }
+
     schedule(CC_SCHEDULE_SELECTOR(GameManager::update), 1 / 75.0f);
 
     return true;
 }
 // TODO: can be a problem, when entering menu, other buttons can still be active
 void GameManager::update(float t) {
-    if (currentGameState == GameState::MENU) {
-        StartMenuState startMenuState = startMenuManager->getState();
+    if (currentState == GameState::MENU) {
+        StartMenuState startMenuState = startMenu->getState();
         switch (startMenuState) {
             case StartMenuState::IDLE:
                 break;
@@ -149,36 +166,34 @@ void GameManager::update(float t) {
                 // Start activities
                 levelManager->startCurrentLevel();
                 // Hide menu
-                startMenuManager->hide();
-                // Change states
-                ingameMenuManager->setState(IngameMenuState::IDLE);
-                currentGameState = GameState::PLAY;
+                startMenu->hide();
+                // Change state
+                currentState = GameState::PLAY;
                 break;
             case StartMenuState::EXIT:
                 cocos2d::Director::getInstance()->end();
                 break;
         }
-    } else if (currentGameState == GameState::PLAY) {
+    } else if (currentState == GameState::PLAY) {
         {
             auto joystickPosition = controllerManager->getStickPosition().getNormalized();
             auto isButtonPressed = controllerManager->getValue();
 
             // Movement
-            int playerLineIndex = player->getCurrentLine();
+            int playerLineIndex = player->getCurrentLineIndex();
             if (joystickPosition.x > 0) {
-                if (playerLineIndex != levelManager->getCurrentLevel()->getLinesCount()) {
-                    player->moveToLine(t, levelManager->getCurrentLevel()->getLine(
+                if (playerLineIndex != levelManager->getCurrentLevel()->getLinesCount() - 1) {
+                    player->moveRight(t, levelManager->getCurrentLevel()->getLine(
                             playerLineIndex + 1));
                 }
-            }
-            if (joystickPosition.x < 0) {
+            } else if (joystickPosition.x < 0) {
                 if (playerLineIndex != 0) {
-                    player->moveToLine(t, levelManager->getCurrentLevel()->getLine(
+                    player->moveLeft(t, levelManager->getCurrentLevel()->getLine(
                             playerLineIndex - 1));
                 }
             }
             if (joystickPosition.y != 0) {
-                player->moveForward(t, joystickPosition.y); // TODO: set maximum amount what player can reach while move forward
+                player->moveForward(t, joystickPosition.y);
             }
 
             if (isButtonPressed) {
@@ -206,7 +221,7 @@ void GameManager::update(float t) {
 
         // Ingame menu
         {
-            IngameMenuState ingameMenuState = ingameMenuManager->getState();
+            IngameMenuState ingameMenuState = ingameMenu->getState();
             switch (ingameMenuState) {
                 case IngameMenuState::IDLE:
                     break;
@@ -214,12 +229,56 @@ void GameManager::update(float t) {
                     // Pause activities
                     levelManager->pauseCurrentLevel();
                     // Show menu
-                    startMenuManager->show();
+                    startMenu->show();
                     // Change states
-                    startMenuManager->setState(StartMenuState::IDLE);
-                    currentGameState = GameState::MENU;
+                    currentState = GameState::MENU;
                     break;
             }
         }
+    } else if (currentState == GameState::GAME_OVER) {
+        GameOverState gameOverState = gameOverMenu->getState();
+        switch (gameOverState) {
+            case GameOverState::IDLE:
+                break;
+            case GameOverState::RESTART:
+                levelManager->getCurrentLevel()->restart();
+                // Change state
+                currentState = GameState::PLAY;
+                break;
+            case GameOverState::TO_MAIN_MENU:
+                // Pause activities
+                levelManager->pauseCurrentLevel();
+                // Hide game over menu
+                gameOverMenu->hide();
+                // Show start menu
+                startMenu->show();
+                // Change state
+                currentState = GameState::MENU;
+                break;
+        }
     }
+}
+
+bool GameManager::onPhysicsContactBegin(cocos2d::PhysicsContact &contact) {
+    auto nodeA = contact.getShapeA()->getBody()->getNode();
+    auto nodeB = contact.getShapeB()->getBody()->getNode();
+
+    if (nodeA && nodeB) {
+        int playerTag = player->getTag();
+        if (nodeA->getTag() == playerTag) {
+            // Set game over
+            currentState = GameState::GAME_OVER;
+
+            // Show menu
+            gameOverMenu->show();
+        } else if (nodeB->getTag() == playerTag) {
+            // Set game over
+            currentState = GameState::GAME_OVER;
+
+            // Show menu
+            gameOverMenu->show();
+        }
+    }
+
+    return true;
 }

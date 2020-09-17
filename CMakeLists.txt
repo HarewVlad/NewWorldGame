@@ -58,7 +58,7 @@ endif()
 list(APPEND GAME_SOURCE
      Classes/AppDelegate.cpp
         Classes/GameManager.cpp
-        Classes/StartMenuManager.cpp
+        Classes/StartMenu.cpp
         Classes/LevelManager.cpp
         Classes/WeatherManager.cpp
         Classes/Player.cpp
@@ -69,12 +69,14 @@ list(APPEND GAME_SOURCE
         Classes/ControllerManager.cpp
         Classes/Enemy.cpp
         Classes/Level.cpp
-        Classes/IngameMenuManager.cpp
+        Classes/IngameMenu.cpp
+        Classes/Line.cpp
+        Classes/GameOverMenu.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
         Classes/GameManager.h
-        Classes/StartMenuManager.h
+        Classes/StartMenu.h
         Classes/LevelManager.h
         Classes/WeatherManager.h
         Classes/Player.h
@@ -85,7 +87,9 @@ list(APPEND GAME_HEADER
         Classes/ControllerManager.h
         Classes/Enemy.h
         Classes/Level.h
-        Classes/IngameMenuManager.h
+        Classes/IngameMenu.h
+        CLasses/Line.h
+        Classes/GameOverMenu.h
      )
 
 if(ANDROID)

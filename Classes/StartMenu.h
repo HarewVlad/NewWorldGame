@@ -2,8 +2,8 @@
 // Created by Vlad on 03.09.2020.
 //
 
-#ifndef PROJ_ANDROID_STARTMENUMANAGER_H
-#define PROJ_ANDROID_STARTMENUMANAGER_H
+#ifndef PROJ_ANDROID_STARTMENU_H
+#define PROJ_ANDROID_STARTMENU_H
 
 #include "cocos2d.h"
 
@@ -13,7 +13,7 @@ enum class StartMenuState {
     EXIT
 };
 
-struct StartMenuManager : public cocos2d::Node {
+struct StartMenu : public cocos2d::Node {
     void init(const std::string &filename);
     inline StartMenuState getState() {
         return currentState;
@@ -32,4 +32,4 @@ private:
     StartMenuState currentState;
 };
 
-#endif //PROJ_ANDROID_STARTMENUMANAGER_H
+#endif //PROJ_ANDROID_STARTMENU_H

@@ -11,7 +11,9 @@
 enum class PlayerState {
     NONE,
     IDLE,
-    MOVE,
+    MOVE_FORWARD,
+    MOVE_RIGHT,
+    MOVE_LEFT,
     ATTACK,
 };
 
@@ -22,7 +24,7 @@ struct Player : public cocos2d::Node {
     void hide(float d = 0);
     void addAnimation(PlayerState state, cocos2d::Animation *animation);
     inline PlayerState getState() {
-        return currentPlayerState;
+        return currentState;
     }
     inline cocos2d::Sprite *getSprite() {
         return sprite;
@@ -34,27 +36,34 @@ struct Player : public cocos2d::Node {
         sprite->setPosition(playerSpawnData.position);
         currentLineIndex = playerSpawnData.lineIndex;
     }
-    inline int getCurrentLine() const {
+    inline int getCurrentLineIndex() const {
         return currentLineIndex;
     }
+    inline int getTag() const {
+        return TAG;
+    }
     void setState(PlayerState state);
-    void moveToLine(float t, Line *line);
+    void moveRight(float t, Line *line);
+    void moveLeft(float t, Line *line);
     void moveForward(float t, float value);
     void attack(float t);
     void update(float t);
 private:
     void setAttackState();
     void setIdleState();
-    void setRunState();
+    void setMoveForwardState();
+    void setMoveRightState();
+    void setMoveLeftState();
+    bool isNotMoving();
 private:
     cocos2d::Sprite *sprite;
     std::unordered_map<int, cocos2d::Animation *> animations;
     Level *currentLevel;
     int currentLineIndex;
-    PlayerState currentPlayerState;
+    PlayerState currentState;
 
-    const float PLAYER_SCALE = 2.0f;
-    const float PLAYER_SPEED = 100.0f;
+    const float SCALE = 2.0f;
+    const int TAG = 0x33;
 };
 
 
