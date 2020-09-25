@@ -16,8 +16,7 @@ enum class IngameMenuState {
 enum class IngameMenuElements {
     PAUSE_BUTTON_NORMAL,
     PAUSE_BUTTON_SELECTED,
-    PAUSE_BUTTON_DISABLED,
-    GAME_OVER_BACKGROUND
+    PAUSE_BUTTON_DISABLED
 };
 
 struct IngameMenu : public cocos2d::Node {

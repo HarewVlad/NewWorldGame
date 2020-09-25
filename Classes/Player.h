@@ -12,6 +12,7 @@ enum class PlayerState {
     NONE,
     IDLE,
     MOVE_FORWARD,
+    MOVE_BACKWARD,
     MOVE_RIGHT,
     MOVE_LEFT,
     ATTACK,
@@ -45,13 +46,15 @@ struct Player : public cocos2d::Node {
     void setState(PlayerState state);
     void moveRight(float t, Line *line);
     void moveLeft(float t, Line *line);
-    void moveForward(float t, float value);
+    void moveForward(float t);
+    void moveBackward(float t);
     void attack(float t);
     void update(float t);
 private:
     void setAttackState();
     void setIdleState();
     void setMoveForwardState();
+    void setMoveBackwardState();
     void setMoveRightState();
     void setMoveLeftState();
     bool isNotMoving();
@@ -62,7 +65,8 @@ private:
     int currentLineIndex;
     PlayerState currentState;
 
-    const float SCALE = 2.0f;
+    const float SCALE = 1.0f;
+    const float SPEED = 1.0f;
     const int TAG = 0x33;
 };
 

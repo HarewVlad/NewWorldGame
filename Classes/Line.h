@@ -8,8 +8,8 @@
 #include "cocos2d.h"
 
 enum class ObjectType {
-    CAR,
-    UFO
+    BEER,
+    FISH
     // ...
 };
 
@@ -25,9 +25,9 @@ enum class LineState {
 };
 
 struct Line : public cocos2d::Node { // TODO: move to Line.cpp / Line.h
-    void init(const cocos2d::Vec2 &position, const std::vector<ObjectType> &objectsVariation, int numObjectsPerLine);
+    void init(const cocos2d::Vec2 &position, const std::vector<ObjectType> &objectsVariation, int numObjectsPerLine, float speed);
     void update(float t);
-    void restart();
+    void reload();
     inline void setState(LineState state) {
         currentState = state;
     }
@@ -44,6 +44,7 @@ private:
     float time;
     float frequency;
     float delay;
+    float speed;
     int lastRenderingObject;
     LineState currentState;
 

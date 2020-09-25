@@ -11,6 +11,7 @@ bool GameOverMenu::init() {
     // Init background
     background = cocos2d::Sprite::create(getSource(GameOverElements::BACKGROUND));
     background->setScaleX(size.width / background->getContentSize().width);
+    background->setScaleY(size.height / background->getContentSize().height);
     background->setPosition(origin + size * 0.5f);
 
     // Init menu

@@ -15,6 +15,7 @@ struct LevelManager : public cocos2d::Node {
     void addLevel(int i, Level *level);
     void update(float t);
     void startCurrentLevel();
+    void reloadCurrentLevel();
     void pauseCurrentLevel();
     Level *getLevel(int i) {
         return levels[i];

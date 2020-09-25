@@ -88,7 +88,7 @@ list(APPEND GAME_HEADER
         Classes/Enemy.h
         Classes/Level.h
         Classes/IngameMenu.h
-        CLasses/Line.h
+        Classes/Line.h
         Classes/GameOverMenu.h
      )
 

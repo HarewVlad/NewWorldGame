@@ -27,3 +27,7 @@ void LevelManager::startCurrentLevel() {
 void LevelManager::pauseCurrentLevel() {
     levels[currentLevel]->setLinesState(LineState::IDLE);
 }
+
+void LevelManager::reloadCurrentLevel() {
+    levels[currentLevel]->reload();
+}

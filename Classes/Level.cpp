@@ -4,7 +4,7 @@
 
 #include "Level.h"
 
-void Level::init(const std::vector<ObjectType> &objectsVariation, int numLines, int numObjectsPerLine) {
+void Level::init(const std::vector<ObjectType> &objectsVariation, int numLines, int numObjectsPerLine, float speed) {
     // Init lines
     auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
     auto size = cocos2d::Director::getInstance()->getVisibleSize();
@@ -13,7 +13,7 @@ void Level::init(const std::vector<ObjectType> &objectsVariation, int numLines, 
     for (int i = 0; i < numLines; ++i) {
         Line *line = new Line();
         line->init({x, origin.y + size.height + size.height / 4.0f},
-                objectsVariation, numObjectsPerLine);
+                objectsVariation, numObjectsPerLine, speed);
         lines.push_back(line);
 
         x += size.width / (numLines + 1);
@@ -48,8 +48,8 @@ void Level::setLinesState(LineState state) {
     }
 }
 
-void Level::restart() {
+void Level::reload() {
     for (auto line : lines) {
-        line->restart();
+        line->reload();
     }
 }

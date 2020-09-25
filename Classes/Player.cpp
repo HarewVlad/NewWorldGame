@@ -99,6 +99,14 @@ void Player::setMoveForwardState() {
     }
 }
 
+void Player::setMoveBackwardState() {
+    if (currentState != PlayerState::MOVE_BACKWARD) {
+        currentState = PlayerState::MOVE_BACKWARD;
+        
+        // ...
+    }
+}
+
 void Player::setMoveRightState() {
     if (currentState != PlayerState::MOVE_RIGHT) {
         currentState = PlayerState::MOVE_RIGHT;
@@ -143,7 +151,7 @@ void Player::moveLeft(float t, Line *line) {
     }
 }
 
-void Player::moveForward(float t, float value) {
+void Player::moveForward(float t) {
     if (isNotMoving()) {
         // Change state
         setState(PlayerState::MOVE_FORWARD);
@@ -152,10 +160,27 @@ void Player::moveForward(float t, float value) {
         auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
 
         auto position = sprite->getPosition();
-        if (position.y < origin.y + size.height &&
-            position.y > origin.y) {
-            auto move = cocos2d::MoveBy::create(t, {0, value});
+        if (position.y < origin.y + size.height) {
+            auto move = cocos2d::MoveBy::create(t, {0, SPEED});
             move->setTag(static_cast<int>(PlayerState::MOVE_FORWARD));
+
+            sprite->runAction(move);
+        }
+    }
+}
+
+void Player::moveBackward(float t) {
+    if (isNotMoving()) {
+        // Change state
+        setState(PlayerState::MOVE_FORWARD);
+        // Move
+        auto size = cocos2d::Director::getInstance()->getVisibleSize();
+        auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
+
+        auto position = sprite->getPosition();
+        if (position.y > origin.y) {
+            auto move = cocos2d::MoveBy::create(t, {0, -SPEED});
+            move->setTag(static_cast<int>(PlayerState::MOVE_BACKWARD));
 
             sprite->runAction(move);
         }
@@ -164,7 +189,7 @@ void Player::moveForward(float t, float value) {
 
 void Player::attack(float t) {
     // Set state
-    setState(PlayerState::ATTACK);
+    // setState(PlayerState::ATTACK);
 
     // TODO: actual attack
 }
@@ -173,8 +198,9 @@ void Player::update(float t) {
     bool isMoveRight = sprite->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_RIGHT)) > 0;
     bool isMoveLeft = sprite->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_LEFT)) > 0;
     bool isMoveForward = sprite->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_FORWARD)) > 0;
+    bool isMoveBackward = sprite->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_BACKWARD)) > 0;
 
-    if (!isMoveForward && !isMoveLeft && !isMoveRight) {
+    if (!isMoveForward && !isMoveLeft && !isMoveRight && !isMoveBackward) {
         setState(PlayerState::IDLE);
     }
 }
@@ -182,5 +208,6 @@ void Player::update(float t) {
 bool Player::isNotMoving() {
     return currentState != PlayerState::MOVE_LEFT
         && currentState != PlayerState::MOVE_RIGHT
-        && currentState != PlayerState::MOVE_FORWARD;
+        && currentState != PlayerState::MOVE_FORWARD
+        && currentState != PlayerState::MOVE_BACKWARD;
 }

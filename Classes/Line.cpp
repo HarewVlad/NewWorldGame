@@ -4,9 +4,9 @@
 
 #include "Line.h"
 
-void Line::init(const cocos2d::Vec2 &position, const std::vector<ObjectType> &objectsVariation, int numObjectsPerLine) {
-    // Set position
+void Line::init(const cocos2d::Vec2 &position, const std::vector<ObjectType> &objectsVariation, int numObjectsPerLine, float speed) {
     this->position = position;
+    this->speed = speed;
     // Set initial delay
     delay = static_cast<float>(random()) / static_cast<float>(RAND_MAX / MAX_DELAY);
     time -= delay;
@@ -22,7 +22,7 @@ void Line::init(const cocos2d::Vec2 &position, const std::vector<ObjectType> &ob
 
     for (auto objectType : objectsVariation) {
         for (int j = 0; j < temp; ++j) {
-            objects.push_back(createObject(objectType, 1.0f));
+            objects.push_back(createObject(objectType, 3.0f));
         }
     }
 
@@ -54,8 +54,10 @@ void Line::update(float t) {
         }
 
         for (auto object : renderingObjects) {
-            auto move = cocos2d::MoveBy::create(t, {0, -0.5f});
-            object.sprite->runAction(move);
+            auto move = cocos2d::MoveBy::create(t, {0, -speed});
+            auto rotate = cocos2d::RotateBy::create(t, speed);
+            auto seq = cocos2d::Sequence::create(move, rotate, nullptr);
+            object.sprite->runAction(seq);
         }
 
         if (lastRenderingObject == objects.size()
@@ -80,16 +82,16 @@ Object Line::createObject(ObjectType type, float scale) {
 
 std::string Line::getObjectSource(ObjectType type) const {
     switch (type) {
-        case ObjectType::CAR:
-            return "box1.png";
-        case ObjectType::UFO:
-            return "";
+        case ObjectType::BEER:
+            return "Beer.png";
+        case ObjectType::FISH:
+            return "Fish.png";
         default:
             throw std::runtime_error("no such object");
     }
 }
 
-void Line::restart() {
+void Line::reload() {
     // Set objects initial position
     for (auto object : objects) {
         object.sprite->setPosition(position);
@@ -101,5 +103,5 @@ void Line::restart() {
     lastRenderingObject = 0;
 
     // Change state
-    currentState = LineState::RUNNING;
+    currentState = LineState::IDLE;
 }

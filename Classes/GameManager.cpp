@@ -6,7 +6,7 @@ static cocos2d::Vector<cocos2d::SpriteFrame *> getSpriteFrames(const char *fmt, 
     auto spriteFrameCache = cocos2d::SpriteFrameCache::getInstance();
     cocos2d::Vector<cocos2d::SpriteFrame *> spriteFrames;
     char str[256];
-    for (int i = 0; i < count; ++i) {
+    for (int i = 1; i < count; ++i) {
         sprintf(str, fmt, i);
         spriteFrames.pushBack(spriteFrameCache->getSpriteFrameByName(str));
     }
@@ -29,12 +29,8 @@ bool GameManager::init()
     {
         // Sprite frame cache
         {
-            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_idle.plist");
-            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_walk.plist");
-            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_jump.plist");
-            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_fall.plist");
-            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_attack1.plist");
-            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("adventurer_attack2.plist");
+            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("elf_idle.plist");
+            cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("elf_walk.plist");
         }
     }
 
@@ -42,7 +38,7 @@ bool GameManager::init()
     {
         this->getPhysicsWorld()->setGravity(cocos2d::Vec2(0, 0));
         this->getPhysicsWorld()->setSubsteps(3);
-        // this->getPhysicsWorld()->setDebugDrawMask(0xffff);
+        this->getPhysicsWorld()->setDebugDrawMask(0xffff);
     }
 
     auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -80,7 +76,7 @@ bool GameManager::init()
         // Level 1
         {
             Level *level = new Level();
-            level->init({ObjectType::CAR}, 4, 10);
+            level->init({ObjectType::BEER, ObjectType::FISH}, 4, 10, 0.9f);
 
             levelManager->addLevel(1, level);
         }
@@ -98,14 +94,14 @@ bool GameManager::init()
     // Player
     {
         player = new Player();
-        player->init("adventurer.png");
+        player->init("elf.png");
         player->setSpawnData(levelManager->getCurrentLevel()->getPlayerSpawnData());
 
         // Animations
         {
             // Idle
             {
-                auto frames = getSpriteFrames("adventurer-idle-%02d.png", 4);
+                auto frames = getSpriteFrames("Elf_M_Idle_%d.png", 4);
                 auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 4.0f);
                 animation->retain();
 
@@ -114,8 +110,8 @@ bool GameManager::init()
 
             // Run
             {
-                auto frames = getSpriteFrames("adventurer-walk-%02d.png", 6);
-                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 6.0f);
+                auto frames = getSpriteFrames("Elf_M_Walk_%d.png", 4);
+                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 4.0f);
                 animation->retain();
 
                 player->addAnimation(PlayerState::MOVE_FORWARD, animation);
@@ -125,11 +121,7 @@ bool GameManager::init()
 
             // Attack
             {
-                auto frames = getSpriteFrames("adventurer-attack2-%02d.png", 6);
-                auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 1 / 6.0f);
-                animation->retain();
-
-                player->addAnimation(PlayerState::ATTACK, animation);
+                
             }
         }
 
@@ -164,6 +156,7 @@ void GameManager::update(float t) {
                 break;
             case StartMenuState::START:
                 // Start activities
+                levelManager->reloadCurrentLevel();
                 levelManager->startCurrentLevel();
                 // Hide menu
                 startMenu->hide();
@@ -181,19 +174,20 @@ void GameManager::update(float t) {
 
             // Movement
             int playerLineIndex = player->getCurrentLineIndex();
-            if (joystickPosition.x > 0) {
+            if (joystickPosition.x > 0.5f) {
                 if (playerLineIndex != levelManager->getCurrentLevel()->getLinesCount() - 1) {
                     player->moveRight(t, levelManager->getCurrentLevel()->getLine(
                             playerLineIndex + 1));
                 }
-            } else if (joystickPosition.x < 0) {
+            } else if (joystickPosition.x < -0.5f) {
                 if (playerLineIndex != 0) {
                     player->moveLeft(t, levelManager->getCurrentLevel()->getLine(
                             playerLineIndex - 1));
                 }
-            }
-            if (joystickPosition.y != 0) {
-                player->moveForward(t, joystickPosition.y);
+            } else if (joystickPosition.y > 0.5f) {
+                player->moveForward(t);
+            } else if (joystickPosition.y < -0.5f) {
+                player->moveBackward(t);
             }
 
             if (isButtonPressed) {
@@ -228,8 +222,8 @@ void GameManager::update(float t) {
                 case IngameMenuState::PAUSE:
                     // Pause activities
                     levelManager->pauseCurrentLevel();
-                    // Show menu
-                    startMenu->show();
+                    // Show ingame menu
+                    startMenu->show(); // TODO: create and show ingame menu
                     // Change states
                     currentState = GameState::MENU;
                     break;
@@ -241,7 +235,11 @@ void GameManager::update(float t) {
             case GameOverState::IDLE:
                 break;
             case GameOverState::RESTART:
-                levelManager->getCurrentLevel()->restart();
+                // Restart activities
+                levelManager->reloadCurrentLevel();
+                levelManager->startCurrentLevel();
+                // Hide game over menu
+                gameOverMenu->hide();
                 // Change state
                 currentState = GameState::PLAY;
                 break;
