@@ -12,8 +12,8 @@ void Level::init(const std::vector<ObjectType> &objectsVariation, int numLines, 
     float x = origin.x + size.width / (numLines + 1);
     for (int i = 0; i < numLines; ++i) {
         Line *line = new Line();
-        line->init({x, origin.y + size.height + size.height / 4.0f},
-                objectsVariation, numObjectsPerLine, speed);
+        line->init(objectsVariation, numObjectsPerLine, speed);
+        line->setPosition({x, origin.y + size.height + size.height / 4.0f});
         lines.push_back(line);
 
         x += size.width / (numLines + 1);

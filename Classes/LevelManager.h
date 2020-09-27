@@ -11,9 +11,9 @@
 #include "Level.h"
 
 struct LevelManager : public cocos2d::Node {
-    bool init();
+    bool init() override;
     void addLevel(int i, Level *level);
-    void update(float t);
+    void update(float t) override;
     void startCurrentLevel();
     void reloadCurrentLevel();
     void pauseCurrentLevel();

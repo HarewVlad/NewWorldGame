@@ -25,20 +25,16 @@ enum class LineState {
 };
 
 struct Line : public cocos2d::Node { // TODO: move to Line.cpp / Line.h
-    void init(const cocos2d::Vec2 &position, const std::vector<ObjectType> &objectsVariation, int numObjectsPerLine, float speed);
+    void init(const std::vector<ObjectType> &objectsVariation, int numObjectsPerLine, float speed);
     void update(float t);
     void reload();
     inline void setState(LineState state) {
         currentState = state;
     }
-    inline cocos2d::Vec2 getPosition() {
-        return position;
-    }
 private:
     Object createObject(ObjectType type, float scale);
     std::string getObjectSource(ObjectType type) const;
 private:
-    cocos2d::Vec2 position;
     std::vector<Object> objects; // All objects of a monster spawn line
     std::vector<Object> renderingObjects; // Objects that are actually rendering on the screen
     float time;

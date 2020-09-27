@@ -14,7 +14,6 @@ struct PlayerSpawnData {
     int lineIndex;
 };
 
-// TODO: store Lines in array, determine lines positions automatically
 struct Level : public cocos2d::Node {
     void init(const std::vector<ObjectType> &objectsVariation, int numLines, int numObjectsPerLine, float speed);
     void setLinesState(LineState state);

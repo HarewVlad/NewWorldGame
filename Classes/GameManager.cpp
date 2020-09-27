@@ -1,3 +1,7 @@
+// TODO: Create baseclass Menu and than inh from it (GameOverMenu, IngameMenu ...)
+// TODO: Redesign states
+// TODO: Menu, Levels - different scenes
+
 #include "GameManager.h"
 
 USING_NS_CC;
@@ -47,15 +51,13 @@ bool GameManager::init()
     // Start menu
     {
         startMenu = new StartMenu();
-        startMenu->init("menuBackground.jpg");
-
-        this->addChild(startMenu, static_cast<int>(Components::MENU), static_cast<int>(Components::MENU));
+        (void)startMenu->init("menuBackground.jpg", CC_CALLBACK_1(GameManager::onStartMenu, this));
     }
 
     // Ingame menu
     {
         ingameMenu = new IngameMenu();
-        (void)ingameMenu->init();
+        (void)ingameMenu->init(CC_CALLBACK_1(GameManager::onIngameMenu, this));
 
         this->addChild(ingameMenu, static_cast<int>(Components::INGAME_MENU), static_cast<int>(Components::INGAME_MENU));
     }
@@ -63,7 +65,7 @@ bool GameManager::init()
     // Game over menu
     {
         gameOverMenu = new GameOverMenu();
-        (void)gameOverMenu->init();
+        (void)gameOverMenu->init(CC_CALLBACK_1(GameManager::onGameOverMenu, this));
 
         this->addChild(gameOverMenu, static_cast<int>(Components::GAME_OVER_MENU), static_cast<int>(Components::GAME_OVER_MENU));
     }
@@ -143,31 +145,16 @@ bool GameManager::init()
         _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
     }
 
-    schedule(CC_SCHEDULE_SELECTOR(GameManager::update), 1 / 75.0f);
+    this->scheduleUpdate();
+
+    // Set initial screen
+    Director::getInstance()->replaceScene(startMenu);
 
     return true;
 }
 // TODO: can be a problem, when entering menu, other buttons can still be active
 void GameManager::update(float t) {
-    if (currentState == GameState::MENU) {
-        StartMenuState startMenuState = startMenu->getState();
-        switch (startMenuState) {
-            case StartMenuState::IDLE:
-                break;
-            case StartMenuState::START:
-                // Start activities
-                levelManager->reloadCurrentLevel();
-                levelManager->startCurrentLevel();
-                // Hide menu
-                startMenu->hide();
-                // Change state
-                currentState = GameState::PLAY;
-                break;
-            case StartMenuState::EXIT:
-                cocos2d::Director::getInstance()->end();
-                break;
-        }
-    } else if (currentState == GameState::PLAY) {
+    if (currentState == GameState::PLAY) {
         {
             auto joystickPosition = controllerManager->getStickPosition().getNormalized();
             auto isButtonPressed = controllerManager->getValue();
@@ -194,14 +181,8 @@ void GameManager::update(float t) {
                 player->attack(t);
             }
 
-            player->update(t);
-
-            controllerManager->setValue(false); // 75 fps causes sneakyButton to register multiple presses on one press
-        }
-
-        // World
-        {
-            levelManager->update(t);
+            controllerManager->setValue(
+                    false); // 75 fps causes sneakyButton to register multiple presses on one press
         }
 
         // Weather
@@ -212,48 +193,6 @@ void GameManager::update(float t) {
                 weatherManager->runWeatherEffects();
             }
         }
-
-        // Ingame menu
-        {
-            IngameMenuState ingameMenuState = ingameMenu->getState();
-            switch (ingameMenuState) {
-                case IngameMenuState::IDLE:
-                    break;
-                case IngameMenuState::PAUSE:
-                    // Pause activities
-                    levelManager->pauseCurrentLevel();
-                    // Show ingame menu
-                    startMenu->show(); // TODO: create and show ingame menu
-                    // Change states
-                    currentState = GameState::MENU;
-                    break;
-            }
-        }
-    } else if (currentState == GameState::GAME_OVER) {
-        GameOverState gameOverState = gameOverMenu->getState();
-        switch (gameOverState) {
-            case GameOverState::IDLE:
-                break;
-            case GameOverState::RESTART:
-                // Restart activities
-                levelManager->reloadCurrentLevel();
-                levelManager->startCurrentLevel();
-                // Hide game over menu
-                gameOverMenu->hide();
-                // Change state
-                currentState = GameState::PLAY;
-                break;
-            case GameOverState::TO_MAIN_MENU:
-                // Pause activities
-                levelManager->pauseCurrentLevel();
-                // Hide game over menu
-                gameOverMenu->hide();
-                // Show start menu
-                startMenu->show();
-                // Change state
-                currentState = GameState::MENU;
-                break;
-        }
     }
 }
 
@@ -263,20 +202,84 @@ bool GameManager::onPhysicsContactBegin(cocos2d::PhysicsContact &contact) {
 
     if (nodeA && nodeB) {
         int playerTag = player->getTag();
-        if (nodeA->getTag() == playerTag) {
-            // Set game over
-            currentState = GameState::GAME_OVER;
-
-            // Show menu
-            gameOverMenu->show();
-        } else if (nodeB->getTag() == playerTag) {
-            // Set game over
-            currentState = GameState::GAME_OVER;
-
-            // Show menu
-            gameOverMenu->show();
+        if (nodeA->getTag() == playerTag ||
+            nodeB->getTag() == playerTag) {
+            setGameOverState();
         }
     }
 
     return true;
+}
+
+void GameManager::onStartMenu(StartMenu *startMenu) {
+    switch (startMenu->getState()) {
+        case StartMenuState::START:
+            setPlayState();
+            break;
+        case StartMenuState::EXIT:
+            cocos2d::Director::getInstance()->end();
+            break;
+        case StartMenuState::NONE:
+            break;
+    }
+}
+
+void GameManager::onGameOverMenu(GameOverMenu *gameOverMenu) {
+    switch (gameOverMenu->getState()) {
+        case GameOverMenuState::RESTART:
+            setPlayState();
+            break;
+        case GameOverMenuState::TO_MAIN_MENU:
+            setMenuState();
+            break;
+        case GameOverMenuState::NONE:
+            break;
+    }
+}
+
+void GameManager::onIngameMenu(IngameMenu *ingameMenu) {
+    switch (ingameMenu->getState()) {
+        case IngameMenuState::PAUSE:
+            setPauseState();
+            break;
+        case IngameMenuState::NONE:
+            break;
+    }
+}
+
+void GameManager::setPauseState() {
+    // Pause activities
+    levelManager->pauseCurrentLevel();
+
+    // Show ingame menu
+    Director::getInstance()->replaceScene(startMenu); // TODO: make and show ingame menu
+
+    // Change states
+    currentState = GameState::PAUSE;
+}
+void GameManager::setPlayState() {
+    // Restart activities
+    levelManager->reloadCurrentLevel();
+    levelManager->startCurrentLevel();
+    player->setSpawnData(levelManager->getCurrentLevel()->getPlayerSpawnData());
+
+    // Change state
+    currentState = GameState::PLAY;
+}
+void GameManager::setGameOverState() {
+    // Set game over
+    currentState = GameState::GAME_OVER;
+
+    // Show menu
+    gameOverMenu->show();
+}
+void GameManager::setMenuState() {
+    // Pause activities
+    levelManager->pauseCurrentLevel();
+
+    // Show start menu
+    Director::getInstance()->replaceScene(startMenu);
+
+    // Change state
+    currentState = GameState::MENU;
 }

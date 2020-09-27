@@ -4,7 +4,10 @@
 
 #include "StartMenu.h"
 
-void StartMenu::init(const std::string &filename) {
+bool StartMenu::init(const std::string &filename, const std::function<void (StartMenu *)> &func) {
+    this->mainFunc = func;
+    this->currentState = StartMenuState::NONE;
+
     // Orientation
     auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
     auto size = cocos2d::Director::getInstance()->getVisibleSize();
@@ -32,31 +35,17 @@ void StartMenu::init(const std::string &filename) {
     // Add components to the node
     this->addChild(background);
     this->addChild(menu);
+
+    return true;
 }
 
 void StartMenu::menuStartCallback(cocos2d::Ref *sender) {
     currentState = StartMenuState::START;
+
+    mainFunc(this);
 }
 void StartMenu::menuExitCallback(cocos2d::Ref *sender) {
     currentState = StartMenuState::EXIT;
-}
 
-void StartMenu::show() {
-    background->runAction(cocos2d::FadeIn::create(1.0f));
-    menu->runAction(cocos2d::FadeIn::create(1.0f));
-
-    menu->setEnabled(true);
-
-    // Set state
-    currentState = StartMenuState::IDLE;
-}
-
-void StartMenu::hide() {
-    background->runAction(cocos2d::FadeOut::create(1.0f));
-    menu->runAction(cocos2d::FadeOut::create(1.0f));
-
-    menu->setEnabled(false);
-
-    // Set state
-    currentState = StartMenuState::IDLE;
+    mainFunc(this);
 }

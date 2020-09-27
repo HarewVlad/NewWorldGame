@@ -10,8 +10,8 @@ void Player::init(const std::string &filename) {
     auto size = cocos2d::Director::getInstance()->getVisibleSize();
 
     sprite = cocos2d::Sprite::create(filename);
-    sprite->setTag(TAG);
     sprite->setScale(SCALE);
+    sprite->setTag(TAG);
     cocos2d::PhysicsBody *body = cocos2d::PhysicsBody::createBox(sprite->getContentSize(),
             cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f));
     body->setRotationEnable(false);
@@ -20,18 +20,20 @@ void Player::init(const std::string &filename) {
     body->setContactTestBitmask(0xFFFFFFFF);
     sprite->setPhysicsBody(body);
 
+    this->scheduleUpdate();
+
     // Add components to node
     this->addChild(sprite);
 }
 
 void Player::show(float d) {
     auto showAction = cocos2d::FadeIn::create(d);
-    sprite->runAction(showAction);
+    this->runAction(showAction);
 }
 
 void Player::hide(float d) {
     auto hideAction = cocos2d::FadeOut::create(d);
-    sprite->runAction(hideAction);
+    this->runAction(hideAction);
 }
 
 void Player::addAnimation(PlayerState state, cocos2d::Animation *animation) {
@@ -56,6 +58,9 @@ void Player::setState(PlayerState state) {
             break;
         case PlayerState::MOVE_RIGHT:
             setMoveRightState();
+            break;
+        case PlayerState::MOVE_BACKWARD:
+            setMoveBackwardState();
             break;
     }
 }
@@ -130,10 +135,10 @@ void Player::moveRight(float t, Line *line) {
         // Change current line
         currentLineIndex++;
         // Change position
-        auto move = cocos2d::MoveTo::create(1, {line->getPosition().x, sprite->getPositionY()});
+        auto move = cocos2d::MoveTo::create(1, {line->getPosition().x, this->getPositionY()});
         move->setTag(static_cast<int>(PlayerState::MOVE_RIGHT));
 
-        sprite->runAction(move);
+        this->runAction(move);
     }
 }
 
@@ -144,10 +149,10 @@ void Player::moveLeft(float t, Line *line) {
         // Change current line
         currentLineIndex--;
         // Change position
-        auto move = cocos2d::MoveTo::create(1, {line->getPosition().x, sprite->getPositionY()});
+        auto move = cocos2d::MoveTo::create(1, {line->getPosition().x, this->getPositionY()});
         move->setTag(static_cast<int>(PlayerState::MOVE_LEFT));
 
-        sprite->runAction(move);
+        this->runAction(move);
     }
 }
 
@@ -164,7 +169,7 @@ void Player::moveForward(float t) {
             auto move = cocos2d::MoveBy::create(t, {0, SPEED});
             move->setTag(static_cast<int>(PlayerState::MOVE_FORWARD));
 
-            sprite->runAction(move);
+            this->runAction(move);
         }
     }
 }
@@ -182,7 +187,7 @@ void Player::moveBackward(float t) {
             auto move = cocos2d::MoveBy::create(t, {0, -SPEED});
             move->setTag(static_cast<int>(PlayerState::MOVE_BACKWARD));
 
-            sprite->runAction(move);
+            this->runAction(move);
         }
     }
 }
@@ -195,10 +200,10 @@ void Player::attack(float t) {
 }
 
 void Player::update(float t) {
-    bool isMoveRight = sprite->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_RIGHT)) > 0;
-    bool isMoveLeft = sprite->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_LEFT)) > 0;
-    bool isMoveForward = sprite->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_FORWARD)) > 0;
-    bool isMoveBackward = sprite->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_BACKWARD)) > 0;
+    bool isMoveRight = this->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_RIGHT)) > 0;
+    bool isMoveLeft = this->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_LEFT)) > 0;
+    bool isMoveForward = this->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_FORWARD)) > 0;
+    bool isMoveBackward = this->getNumberOfRunningActionsByTag(static_cast<int>(PlayerState::MOVE_BACKWARD)) > 0;
 
     if (!isMoveForward && !isMoveLeft && !isMoveRight && !isMoveBackward) {
         setState(PlayerState::IDLE);

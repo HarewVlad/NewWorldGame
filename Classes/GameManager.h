@@ -18,6 +18,7 @@ const float G = -300.0f;
 enum class GameState {
     MENU,
     PLAY,
+    PAUSE,
     GAME_OVER
 };
 
@@ -27,8 +28,7 @@ enum class Components {
     WEATHER,
     CONTROLLERS,
     INGAME_MENU,
-    GAME_OVER_MENU,
-    MENU
+    GAME_OVER_MENU
 };
 
 class GameManager : public cocos2d::Scene
@@ -44,6 +44,15 @@ public:
     // My
     void update(float t);
     bool onPhysicsContactBegin(cocos2d::PhysicsContact &contact); // TODO: mb create different class for collision managment
+private:
+    void onStartMenu(StartMenu *startMenu);
+    void onGameOverMenu(GameOverMenu *gameOverMenu);
+    void onIngameMenu(IngameMenu *ingameMenu);
+
+    void setPauseState();
+    void setPlayState();
+    void setGameOverState();
+    void setMenuState();
 private:
     // Objects
     StartMenu *startMenu;

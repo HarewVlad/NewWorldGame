@@ -9,7 +9,7 @@
 #include "ui/CocosGUI.h"
 
 enum class IngameMenuState {
-    IDLE,
+    NONE,
     PAUSE
 };
 
@@ -20,7 +20,7 @@ enum class IngameMenuElements {
 };
 
 struct IngameMenu : public cocos2d::Node {
-    bool init() override;
+    bool init(const std::function<void (IngameMenu *)> &func);
     inline IngameMenuState getState() {
         return currentState;
     }
@@ -33,6 +33,8 @@ private:
 private:
     cocos2d::ui::Button *menuButton;
     IngameMenuState currentState;
+
+    std::function<void (IngameMenu *)> mainFunc;
 };
 
 #endif //PROJ_ANDROID_INGAMEMENU_H

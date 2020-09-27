@@ -11,15 +11,15 @@ enum class GameOverElements {
     BACKGROUND
 };
 
-enum class GameOverState {
-    IDLE,
+enum class GameOverMenuState {
+    NONE,
     RESTART,
     TO_MAIN_MENU
 };
 
 struct GameOverMenu : public cocos2d::Node {
-    bool init() override;
-    inline GameOverState getState() const {
+    bool init(const std::function<void (GameOverMenu *)> &func);
+    inline GameOverMenuState getState() const {
         return currentState;
     }
     void hide();
@@ -31,7 +31,9 @@ private:
 private:
     cocos2d::Menu *menu;
     cocos2d::Sprite *background;
-    GameOverState currentState;
+    GameOverMenuState currentState;
+
+    std::function<void (GameOverMenu *)> mainFunc;
 };
 
 

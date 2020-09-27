@@ -8,21 +8,19 @@
 #include "cocos2d.h"
 
 enum class StartMenuState {
-    IDLE,
+    NONE,
     START,
     EXIT
 };
 
-struct StartMenu : public cocos2d::Node {
-    void init(const std::string &filename);
+struct StartMenu : public cocos2d::Scene {
+    bool init(const std::string &filename, const std::function<void (StartMenu *)> &func);
     inline StartMenuState getState() {
         return currentState;
     }
     inline void setState(StartMenuState state) {
         currentState = state;
     }
-    void show();
-    void hide();
 private:
     void menuStartCallback(cocos2d::Ref *sender);
     void menuExitCallback(cocos2d::Ref *sender);
@@ -30,6 +28,8 @@ private:
     cocos2d::Sprite *background;
     cocos2d::Menu *menu;
     StartMenuState currentState;
+
+    std::function<void (StartMenu *)> mainFunc;
 };
 
 #endif //PROJ_ANDROID_STARTMENU_H

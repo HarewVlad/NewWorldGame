@@ -7,6 +7,8 @@
 bool LevelManager::init() {
     this->currentLevel = 1;
 
+    this->scheduleUpdate();
+
     return true;
 }
 

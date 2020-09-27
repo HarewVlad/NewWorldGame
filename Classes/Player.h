@@ -30,17 +30,14 @@ struct Player : public cocos2d::Node {
     inline cocos2d::Sprite *getSprite() {
         return sprite;
     }
-    inline cocos2d::Vec2 getPosition() {
-        return sprite->getPosition();
-    }
     inline void setSpawnData(const PlayerSpawnData &playerSpawnData) {
-        sprite->setPosition(playerSpawnData.position);
+        setPosition(playerSpawnData.position);
         currentLineIndex = playerSpawnData.lineIndex;
     }
     inline int getCurrentLineIndex() const {
         return currentLineIndex;
     }
-    inline int getTag() const {
+    inline int getTag() {
         return TAG;
     }
     void setState(PlayerState state);
@@ -49,7 +46,7 @@ struct Player : public cocos2d::Node {
     void moveForward(float t);
     void moveBackward(float t);
     void attack(float t);
-    void update(float t);
+    void update(float t) override;
 private:
     void setAttackState();
     void setIdleState();
@@ -61,7 +58,6 @@ private:
 private:
     cocos2d::Sprite *sprite;
     std::unordered_map<int, cocos2d::Animation *> animations;
-    Level *currentLevel;
     int currentLineIndex;
     PlayerState currentState;
 

@@ -4,7 +4,10 @@
 
 #include "GameOverMenu.h"
 
-bool GameOverMenu::init() {
+bool GameOverMenu::init(const std::function<void (GameOverMenu *)> &func) {
+    this->mainFunc = func;
+    this->currentState = GameOverMenuState::NONE;
+
     auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
     auto size = cocos2d::Director::getInstance()->getVisibleSize();
 
@@ -54,10 +57,20 @@ std::string GameOverMenu::getSource(GameOverElements element) {
 }
 
 void GameOverMenu::gameOverMenuRestart(cocos2d::Ref *sender) {
-    currentState = GameOverState::RESTART;
+    // Hide menu
+    hide();
+
+    currentState = GameOverMenuState::RESTART;
+
+    mainFunc(this);
 }
 void GameOverMenu::gameOverMenuToMainMenu(cocos2d::Ref *sender) {
-    currentState = GameOverState::TO_MAIN_MENU;
+    // Hide menu
+    hide();
+
+    currentState = GameOverMenuState::TO_MAIN_MENU;
+
+    mainFunc(this);
 }
 
 void GameOverMenu::hide() {
@@ -67,7 +80,7 @@ void GameOverMenu::hide() {
     menu->setEnabled(false);
 
     // Change state
-    currentState = GameOverState::IDLE;
+    currentState = GameOverMenuState::NONE;
 }
 
 void GameOverMenu::show() {
@@ -79,5 +92,5 @@ void GameOverMenu::show() {
     menu->setEnabled(true);
 
     // Change state
-    currentState = GameOverState::IDLE;
+    currentState = GameOverMenuState::NONE;
 }

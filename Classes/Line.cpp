@@ -4,8 +4,7 @@
 
 #include "Line.h"
 
-void Line::init(const cocos2d::Vec2 &position, const std::vector<ObjectType> &objectsVariation, int numObjectsPerLine, float speed) {
-    this->position = position;
+void Line::init(const std::vector<ObjectType> &objectsVariation, int numObjectsPerLine, float speed) {
     this->speed = speed;
     // Set initial delay
     delay = static_cast<float>(random()) / static_cast<float>(RAND_MAX / MAX_DELAY);
@@ -75,7 +74,6 @@ Object Line::createObject(ObjectType type, float scale) {
     body->setContactTestBitmask(0xFFFFFFFF);
 
     object->setScale(scale);
-    object->setPosition(position);
     object->setPhysicsBody(body);
     return Object {type, object };
 }
@@ -94,7 +92,7 @@ std::string Line::getObjectSource(ObjectType type) const {
 void Line::reload() {
     // Set objects initial position
     for (auto object : objects) {
-        object.sprite->setPosition(position);
+        object.sprite->setPosition(this->getPosition());
     }
 
     // Clear

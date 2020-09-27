@@ -4,7 +4,10 @@
 
 #include "IngameMenu.h"
 
-bool IngameMenu::init() {
+bool IngameMenu::init(const std::function<void (IngameMenu *)> &func) {
+    this->mainFunc = func;
+    this->currentState = IngameMenuState::NONE;
+
     auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
     auto size = cocos2d::Director::getInstance()->getVisibleSize();
 
@@ -24,6 +27,8 @@ bool IngameMenu::init() {
 
 void IngameMenu::menuPauseCallback(cocos2d::Ref *sender) {
     currentState = IngameMenuState::PAUSE;
+
+    mainFunc(this);
 }
 
 std::string IngameMenu::getSource(IngameMenuElements element) const noexcept {
