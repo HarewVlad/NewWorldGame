@@ -10,29 +10,21 @@
 
 #include "Level.h"
 
-struct LevelManager : public cocos2d::Node {
-    bool init() override;
-    void addLevel(int i, Level *level);
-    void update(float t) override;
-    void startCurrentLevel();
-    void reloadCurrentLevel();
-    void pauseCurrentLevel();
-    Level *getLevel(int i) {
-        return levels[i];
-    }
-    inline void setCurrentLevelIndex(int i) {
-        currentLevel = i;
-    }
-    inline int getCurrentLevelIndex() const {
-        return currentLevel;
-    }
-    inline Level *getCurrentLevel() {
-        return levels[currentLevel];
-    }
-private:
-    std::unordered_map<int, Level *> levels;
-    int currentLevel;
+struct LevelManager {
+  bool init();
+  void addLevel(int i, Level *level);
+  void startCurrentLevel();
+  void reloadCurrentLevel();
+  void pauseCurrentLevel();
+  void resumeCurrentLevel();
+  Level *getLevel(int i) { return levels[i]; }
+  inline void setCurrentLevelIndex(int i) { currentLevel = i; }
+  inline int getCurrentLevelIndex() const { return currentLevel; }
+  inline Level *getCurrentLevel() { return levels[currentLevel]; }
+
+ private:
+  std::unordered_map<int, Level *> levels;
+  int currentLevel;
 };
 
-
-#endif //PROJ_ANDROID_LEVELMANAGER_H
+#endif  // PROJ_ANDROID_LEVELMANAGER_H

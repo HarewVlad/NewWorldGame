@@ -4,93 +4,69 @@
 
 #include "GameOverMenu.h"
 
-bool GameOverMenu::init(const std::function<void (GameOverMenu *)> &func) {
-    this->mainFunc = func;
-    this->currentState = GameOverMenuState::NONE;
+bool GameOverMenu::init(const std::function<void(GameOverMenu *)> &func) {
+  if (!Scene::init()) {
+    return false;
+  }
 
-    auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
-    auto size = cocos2d::Director::getInstance()->getVisibleSize();
+  this->mainFunc = func;
+  this->currentState = GameOverMenuState::NONE;
 
-    // Init background
-    background = cocos2d::Sprite::create(getSource(GameOverElements::BACKGROUND));
-    background->setScaleX(size.width / background->getContentSize().width);
-    background->setScaleY(size.height / background->getContentSize().height);
-    background->setPosition(origin + size * 0.5f);
+  auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
+  auto size = cocos2d::Director::getInstance()->getVisibleSize();
 
-    // Init menu
-    menu = cocos2d::Menu::create();
+  // Init background
+  background = cocos2d::Sprite::create(getSource(GameOverElements::BACKGROUND));
+  background->setScaleX(size.width / background->getContentSize().width);
+  background->setScaleY(size.height / background->getContentSize().height);
+  background->setPosition(origin + size * 0.5f);
 
-    // Restart
-    {
-        auto label = cocos2d::Label::createWithTTF("Restart", "fonts/Marker Felt.ttf", 24);
-        auto menuItem = cocos2d::MenuItemLabel::create(label);
-        menuItem->setPositionY(24);
-        menuItem->setCallback(CC_CALLBACK_1(GameOverMenu::gameOverMenuRestart, this));
-        menu->addChild(menuItem);
-    }
+  // Init menu
+  menu = cocos2d::Menu::create();
 
-    // To main menu
-    {
-        auto label = cocos2d::Label::createWithTTF("To Main Menu", "fonts/Marker Felt.ttf", 24);
-        auto menuItem = cocos2d::MenuItemLabel::create(label);
-        menuItem->setPositionY(0);
-        menuItem->setCallback(CC_CALLBACK_1(GameOverMenu::gameOverMenuToMainMenu, this));
-        menu->addChild(menuItem);
-    }
+  // Restart
+  {
+    auto label =
+        cocos2d::Label::createWithTTF("Restart", "fonts/Marker Felt.ttf", 24);
+    auto menuItem = cocos2d::MenuItemLabel::create(label);
+    menuItem->setPositionY(24);
+    menuItem->setCallback(
+        CC_CALLBACK_1(GameOverMenu::gameOverMenuRestart, this));
+    menu->addChild(menuItem);
+  }
 
-    // Add
-    this->addChild(background);
-    this->addChild(menu);
+  // To main menu
+  {
+    auto label = cocos2d::Label::createWithTTF("To Main Menu",
+                                               "fonts/Marker Felt.ttf", 24);
+    auto menuItem = cocos2d::MenuItemLabel::create(label);
+    menuItem->setPositionY(0);
+    menuItem->setCallback(
+        CC_CALLBACK_1(GameOverMenu::gameOverMenuToMainMenu, this));
+    menu->addChild(menuItem);
+  }
 
-    // Hide and disable menu initially
-    this->setVisible(false);
-    menu->setEnabled(false);
+  // Add
+  this->addChild(background);
+  this->addChild(menu);
 
-    return true;
+  return true;
 }
 
 std::string GameOverMenu::getSource(GameOverElements element) {
-    switch (element) {
-        case GameOverElements::BACKGROUND:
-            return "gameOverMenuBackground.png";
-    }
+  switch (element) {
+    case GameOverElements::BACKGROUND:
+      return "gameOverMenuBackground.png";
+  }
 }
 
 void GameOverMenu::gameOverMenuRestart(cocos2d::Ref *sender) {
-    // Hide menu
-    hide();
+  currentState = GameOverMenuState::RESTART;
 
-    currentState = GameOverMenuState::RESTART;
-
-    mainFunc(this);
+  mainFunc(this);
 }
 void GameOverMenu::gameOverMenuToMainMenu(cocos2d::Ref *sender) {
-    // Hide menu
-    hide();
+  currentState = GameOverMenuState::TO_MAIN_MENU;
 
-    currentState = GameOverMenuState::TO_MAIN_MENU;
-
-    mainFunc(this);
-}
-
-void GameOverMenu::hide() {
-    background->runAction(cocos2d::FadeOut::create(1.0f));
-    menu->runAction(cocos2d::FadeOut::create(1.0f));
-
-    menu->setEnabled(false);
-
-    // Change state
-    currentState = GameOverMenuState::NONE;
-}
-
-void GameOverMenu::show() {
-    this->setVisible(true); // TODO: fix this shit
-
-    background->runAction(cocos2d::FadeIn::create(1.0f));
-    menu->runAction(cocos2d::FadeIn::create(1.0f));
-
-    menu->setEnabled(true);
-
-    // Change state
-    currentState = GameOverMenuState::NONE;
+  mainFunc(this);
 }

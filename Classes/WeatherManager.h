@@ -7,24 +7,19 @@
 
 #include "cocos2d.h"
 
-enum class WeatherType {
-    NONE,
-    RAIN,
-    SNOW
-};
+enum class WeatherType { NONE, RAIN, SNOW };
 
 struct WeatherManager : public cocos2d::Node {
-    void addWeatherEffect(WeatherType type);
-    void runWeatherEffects();
-    void stopAllEffects();
-    void stopEffect(WeatherType type);
-    bool haveEffect(WeatherType type);
-    inline int getType() {
-        return currentWeather;
-    }
-private:
-    int currentWeather; // Can have multiple weather effects at once (RAIN | STROM ...)
+  void addWeatherEffect(WeatherType type);
+  void runWeatherEffects();
+  void stopAllEffects();
+  void stopEffect(WeatherType type);
+  bool haveEffect(WeatherType type);
+  inline int getType() { return currentWeather; }
+
+ private:
+  int currentWeather;  // Can have multiple weather effects at once (RAIN |
+                       // STROM ...)
 };
 
-
-#endif //PROJ_ANDROID_WEATHERMANAGER_H
+#endif  // PROJ_ANDROID_WEATHERMANAGER_H

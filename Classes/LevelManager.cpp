@@ -5,31 +5,15 @@
 #include "LevelManager.h"
 
 bool LevelManager::init() {
-    this->currentLevel = 1;
+  this->currentLevel = 1;
 
-    this->scheduleUpdate();
-
-    return true;
+  return true;
 }
 
-void LevelManager::addLevel(int i, Level *level) {
-    levels[i] = level;
+void LevelManager::addLevel(int i, Level *level) { levels[i] = level; }
 
-    this->addChild(level);
-}
+void LevelManager::startCurrentLevel() { levels[currentLevel]->setStart(); }
 
-void LevelManager::update(float t) {
-    levels[currentLevel]->update(t);
-}
+void LevelManager::pauseCurrentLevel() { levels[currentLevel]->setPause(); }
 
-void LevelManager::startCurrentLevel() {
-    levels[currentLevel]->setLinesState(LineState::RUNNING);
-}
-
-void LevelManager::pauseCurrentLevel() {
-    levels[currentLevel]->setLinesState(LineState::IDLE);
-}
-
-void LevelManager::reloadCurrentLevel() {
-    levels[currentLevel]->reload();
-}
+void LevelManager::resumeCurrentLevel() { levels[currentLevel]->setResume(); }

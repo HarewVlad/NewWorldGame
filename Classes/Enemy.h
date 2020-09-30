@@ -9,14 +9,14 @@
 
 // TODO: inheritance from Character
 struct Enemy : public cocos2d::Node {
-    void init(const std::string &filename, const cocos2d::Vec2 &position);
-private:
-    cocos2d::Sprite *sprite;
+  void init(const std::string &filename, const cocos2d::Vec2 &position);
 
-    const float ENEMY_SCALE = 2.0f;
-    const float ENEMY_WALK_SPEED = 200.0f;
-    const float ENEMY_JUMP_SPEED = 2000.0f;
+ private:
+  cocos2d::Sprite *sprite;
+
+  const float ENEMY_SCALE = 2.0f;
+  const float ENEMY_WALK_SPEED = 200.0f;
+  const float ENEMY_JUMP_SPEED = 2000.0f;
 };
 
-
-#endif //PROJ_ANDROID_ENEMY_H
+#endif  // PROJ_ANDROID_ENEMY_H
