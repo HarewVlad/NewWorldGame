@@ -179,9 +179,9 @@ void Player::moveForward(float t) {
     auto size = cocos2d::Director::getInstance()->getVisibleSize();
     auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
 
-    auto position = sprite->getPosition();
+    auto position = this->getPosition();
     if (position.y < origin.y + size.height) {
-      auto move = cocos2d::MoveBy::create(t, {0, SPEED});
+      auto move = cocos2d::MoveBy::create(1, {0, SPEED});
       move->setTag(static_cast<int>(PlayerState::MOVE_FORWARD));
 
       this->runAction(move);
@@ -197,9 +197,9 @@ void Player::moveBackward(float t) {
     auto size = cocos2d::Director::getInstance()->getVisibleSize();
     auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
 
-    auto position = sprite->getPosition();
+    auto position = this->getPosition();
     if (position.y > origin.y) {
-      auto move = cocos2d::MoveBy::create(t, {0, -SPEED});
+      auto move = cocos2d::MoveBy::create(1, {0, -SPEED});
       move->setTag(static_cast<int>(PlayerState::MOVE_BACKWARD));
 
       this->runAction(move);

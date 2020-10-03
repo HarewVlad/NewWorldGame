@@ -236,6 +236,7 @@ void Level::setInitialPlayerPosition() {
   auto playerSpawnPosition = lines[playerSpawnLineIndex]->getPosition();
   playerSpawnPosition.y -= visibleSize.height;
 
+  player->stopAllActions();
   player->setLineIndex(playerSpawnLineIndex);
   player->setPosition(playerSpawnPosition);
 }

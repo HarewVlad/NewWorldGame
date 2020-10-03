@@ -56,7 +56,7 @@ struct Player : public cocos2d::Node {
 
   // Constants
   const float SCALE = 1.0f;
-  const float SPEED = 1.0f;
+  const float SPEED = 50.0f;
   const float EXPAND_ZONE_OFFSET = 10.0f;
   const int TAG = 0x33;
 };
