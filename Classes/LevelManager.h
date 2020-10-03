@@ -16,7 +16,6 @@ struct LevelManager {
   void startCurrentLevel();
   void reloadCurrentLevel();
   void pauseCurrentLevel();
-  void resumeCurrentLevel();
   Level *getLevel(int i) { return levels[i]; }
   inline void setCurrentLevelIndex(int i) { currentLevel = i; }
   inline int getCurrentLevelIndex() const { return currentLevel; }

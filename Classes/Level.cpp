@@ -68,12 +68,14 @@ bool Level::init(const std::string &backgroundFileName,
   }
 
   // Cache
-  {// Sprite frame cache
-   {cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
+  {
+    // Sprite frame cache
+    {
+      cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
        "elf_idle.plist");
-  cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
-      "elf_walk.plist");
-}
+      cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
+        "elf_walk.plist");
+    }
 }
 
 // Player
@@ -107,48 +109,54 @@ bool Level::init(const std::string &backgroundFileName,
 
     // Attack
     {}
+
+    setInitialPlayerPosition();
   }
 
   this->addChild(player, static_cast<int>(Components::PLAYER),
                  static_cast<int>(Components::PLAYER));
 }
 
-// Contact listener
-{
-  auto contactListener = cocos2d::EventListenerPhysicsContact::create();
-  contactListener->onContactBegin =
-      CC_CALLBACK_1(Level::onPhysicsContactBegin, this);
-  _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener,
-                                                           this);
-}
+  // Contact listener
+  {
+    auto contactListener = cocos2d::EventListenerPhysicsContact::create();
+    contactListener->onContactBegin =
+        CC_CALLBACK_1(Level::onPhysicsContactBegin, this);
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener,
+                                                             this);
+  }
 
-// Ingame menu
-{
-  ingameMenu = new IngameMenu();
-  assert(ingameMenu->init(ingameMenuBackgroundFileName,
-                          CC_CALLBACK_1(Level::onIngameMenu, this)));
+  // Ingame menu
+  {
+    ingameMenu = new IngameMenu();
+    assert(ingameMenu->init(ingameMenuBackgroundFileName,
+                            CC_CALLBACK_1(Level::onIngameMenu, this)));
 
-  this->addChild(ingameMenu, static_cast<int>(Components::INGAME_MENU),
-                 static_cast<int>(Components::INGAME_MENU));
-}
+    this->addChild(ingameMenu, static_cast<int>(Components::INGAME_MENU),
+                   static_cast<int>(Components::INGAME_MENU));
+  }
 
-// Weather
-{
-  weatherManager = new WeatherManager();
+  // Weather
+  {
+    weatherManager = new WeatherManager();
 
-  this->addChild(weatherManager, static_cast<int>(Components::WEATHER),
-                 static_cast<int>(Components::WEATHER));
-}
+    this->addChild(weatherManager, static_cast<int>(Components::WEATHER),
+                   static_cast<int>(Components::WEATHER));
+  }
 
-this->currentState = LevelState::NONE;
+  this->currentState = LevelState::NONE;
+  this->mainFunc = func;
 
-this->getPhysicsWorld()->setGravity(cocos2d::Vec2(0, 0));
-this->getPhysicsWorld()->setSubsteps(3);
-this->getPhysicsWorld()->setDebugDrawMask(0xffff);
+  this->getPhysicsWorld()->setGravity(cocos2d::Vec2(0, 0));
+  this->getPhysicsWorld()->setSubsteps(3);
 
-this->scheduleUpdate();
+#ifdef DEBUG_ENABLED
+  this->getPhysicsWorld()->setDebugDrawMask(0xffff);
+#endif
 
-return true;
+  this->scheduleUpdate();
+
+  return true;
 }
 
 void Level::update(float t) {
@@ -189,40 +197,25 @@ void Level::update(float t) {
 
 void Level::setReload() {
   for (auto line : lines) {
-    line->reload();
+    line->setReload();
   }
-
-  for (auto line : lines) {
-    line->setState(LineState::RUN);
-  }
-
   setInitialPlayerPosition();
 
-  setState(LevelState::RUN);
+  setState(LevelState::NONE);
 }
 
 void Level::setStart() {
   for (auto line : lines) {
-    line->setState(LineState::RUN);
+    line->setStart();
   }
 
   setState(LevelState::RUN);
-}
-
-void Level::setResume() {
-  if (currentState == LevelState::PAUSE) {
-    for (auto line : lines) {
-      line->setState(LineState::RUN);
-    }
-
-    setState(LevelState::RUN);
-  }
 }
 
 void Level::setPause() {
   if (currentState == LevelState::RUN) {
     for (auto line : lines) {
-      line->setState(LineState::PAUSE);
+      line->setPause();
     }
 
     setState(LevelState::PAUSE);
@@ -231,11 +224,6 @@ void Level::setPause() {
 
 void Level::setGameOver() {
   if (currentState != LevelState::GAME_OVER) {
-    for (auto line : lines) {
-      // TODO: fix
-      line->setState(LineState::NONE);
-    }
-
     setState(LevelState::GAME_OVER);
   }
 }
@@ -247,7 +235,7 @@ bool Level::onPhysicsContactBegin(cocos2d::PhysicsContact &contact) {
   if (nodeA && nodeB) {
     int playerTag = player->getTag();
     if (nodeA->getTag() == playerTag || nodeB->getTag() == playerTag) {
-      setState(LevelState::GAME_OVER);
+      setGameOver();
     }
   }
 
@@ -269,9 +257,10 @@ void Level::onIngameMenu(IngameMenu *ingameMenu) {
   switch (ingameMenu->getState()) {
     case IngameMenuState::RESET:
       setReload();
+      setStart();
       break;
     case IngameMenuState::RESUME:
-      setResume();
+      setStart();
       break;
     case IngameMenuState::TO_MAIN_MENU:
       // Player has surrendered

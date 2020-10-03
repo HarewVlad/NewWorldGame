@@ -16,4 +16,4 @@ void LevelManager::startCurrentLevel() { levels[currentLevel]->setStart(); }
 
 void LevelManager::pauseCurrentLevel() { levels[currentLevel]->setPause(); }
 
-void LevelManager::resumeCurrentLevel() { levels[currentLevel]->setResume(); }
+void LevelManager::reloadCurrentLevel() { levels[currentLevel]->setReload(); }

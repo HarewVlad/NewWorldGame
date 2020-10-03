@@ -63,8 +63,10 @@ void Line::update(float t) {
       object.sprite->runAction(seq);
     }
 
+    auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
+
     if (lastRenderingObject == objects.size() &&
-        renderingObjects[lastRenderingObject - 1].sprite->getPositionY() <= 0) {
+        renderingObjects[lastRenderingObject - 1].sprite->getPositionY() <= -visibleSize.height * 1.5f) {
       currentState = LineState::FINISHED;
     }
   }
@@ -93,7 +95,7 @@ std::string Line::getObjectSource(ObjectType type) const {
   }
 }
 
-void Line::reload() {
+void Line::setReload() {
   for (auto object : objects) {
     object.sprite->setPosition(0, 0);
   }
@@ -103,4 +105,12 @@ void Line::reload() {
   lastRenderingObject = 0;
 
   currentState = LineState::NONE;
+}
+
+void Line::setStart() {
+  currentState = LineState::RUN;
+}
+
+void Line::setPause() {
+  currentState = LineState::PAUSE;
 }

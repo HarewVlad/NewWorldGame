@@ -38,7 +38,6 @@ class Level : public cocos2d::Scene {
   void setReload();
   void setStart();
   void setPause();
-  void setResume();
   void setGameOver();
 
   inline Line *getLine(int i) const { return lines[i]; }

@@ -3,11 +3,13 @@
 //
 
 #include "ControllerManager.h"
-void ControllerManager::init(const cocos2d::Vec2 &position) {
+bool ControllerManager::init(const cocos2d::Vec2 &position) {
   this->setPosition(position);
 
   initJoystick();
   initButton();
+
+  return true;
 }
 
 void ControllerManager::initJoystick() {

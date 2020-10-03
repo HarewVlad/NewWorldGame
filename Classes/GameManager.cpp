@@ -57,14 +57,14 @@ bool GameManager::init() {
 
 void GameManager::update(float t) {
   if (currentState != GameState::MENU) {
-    setState(GameState::MENU);
+    setMenu();
   }
 }
 
 void GameManager::onStartMenu(StartMenu *startMenu) {
   switch (startMenu->getState()) {
     case StartMenuState::START:
-      setState(GameState::PLAY);
+      setPlay();
       break;
     case StartMenuState::EXIT:
       cocos2d::Director::getInstance()->end();
@@ -74,28 +74,29 @@ void GameManager::onStartMenu(StartMenu *startMenu) {
   }
 }
 
+// TODO: not in use now
 void GameManager::onGameOverMenu(GameOverMenu *gameOverMenu) {
   switch (gameOverMenu->getState()) {
     case GameOverMenuState::RESTART:
-      setState(GameState::PLAY);
+      setPlay();
       break;
     case GameOverMenuState::TO_MAIN_MENU:
-      setState(GameState::MENU);
+      setMenu();
       break;
     case GameOverMenuState::NONE:
       break;
   }
 }
+//
 
 void GameManager::onLevel(Level *level) {
   switch (level->getState()) {
     case LevelState::RUN:
       break;
     case LevelState::PAUSE:
-      setState(GameState::PAUSE);
       break;
     case LevelState::GAME_OVER:
-      setState(GameState::GAME_OVER);
+      setMenu();
       break;
     case LevelState::WIN:
       break;
@@ -104,35 +105,19 @@ void GameManager::onLevel(Level *level) {
   }
 }
 
-void GameManager::setState(GameState state) {
-  switch (state) {
-    case GameState::MENU: {
-      levelManager->pauseCurrentLevel();
+void GameManager::setMenu() {
+  currentState = GameState::MENU;
 
-      currentState = GameState::MENU;
+  Director::getInstance()->pushScene(
+    TransitionFade::create(0.5, startMenu, Color3B(0, 0, 0)));
+}
 
-      Director::getInstance()->replaceScene(
-          TransitionFade::create(0.5, startMenu, Color3B(0, 255, 255)));
-    } break;
-    case GameState::PLAY: {
-      levelManager->startCurrentLevel();
+void GameManager::setPlay() {
+  levelManager->reloadCurrentLevel();
+  levelManager->startCurrentLevel();
 
-      currentState = GameState::PLAY;
+  currentState = GameState::PLAY;
 
-      Director::getInstance()->replaceScene(TransitionFade::create(
-          0.5, levelManager->getCurrentLevel(), Color3B(0, 255, 255)));
-    } break;
-    case GameState::PAUSE: {
-      currentState = GameState::PAUSE;
-
-      Director::getInstance()->replaceScene(startMenu);
-    } break;
-    case GameState::GAME_OVER: {
-      currentState = GameState::GAME_OVER;
-
-      Director::getInstance()->replaceScene(startMenu);
-    } break;
-    case GameState::NONE:
-      break;
-  }
+  Director::getInstance()->pushScene(TransitionFade::create(
+    0.5, levelManager->getCurrentLevel(), Color3B(0, 0, 0)));
 }

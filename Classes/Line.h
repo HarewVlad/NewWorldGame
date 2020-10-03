@@ -24,9 +24,9 @@ struct Line : public cocos2d::Node {
   bool init(const std::vector<ObjectType> &objectsVariation,
             int numObjectsPerLine, float speed);
   void update(float t) override;
-  void reload();
-  inline void setState(LineState state) { currentState = state; }
-
+  void setReload();
+  void setStart();
+  void setPause();
  private:
   Object createObject(ObjectType type, float scale);
   std::string getObjectSource(ObjectType type) const;
