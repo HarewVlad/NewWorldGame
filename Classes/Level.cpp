@@ -4,19 +4,10 @@
 
 #include "Level.h"
 
-static cocos2d::Vector<cocos2d::SpriteFrame *> getSpriteFrames(const char *fmt,
-                                                               int count) {
-  auto spriteFrameCache = cocos2d::SpriteFrameCache::getInstance();
-  cocos2d::Vector<cocos2d::SpriteFrame *> spriteFrames;
-  char str[256];
-  for (int i = 1; i < count; ++i) {
-    sprintf(str, fmt, i);
-    spriteFrames.pushBack(spriteFrameCache->getSpriteFrameByName(str));
-  }
-  return spriteFrames;
-}
+#define DEBUG_ENABLED
 
-bool Level::init(const std::string &backgroundFileName,
+bool Level::init(Player *player,
+                 const std::string &backgroundFileName,
                  const std::string &ingameMenuBackgroundFileName,
                  const std::vector<ObjectType> &objectsVariation, int numLines,
                  int numObjectsPerLine, float speed,
@@ -67,63 +58,31 @@ bool Level::init(const std::string &backgroundFileName,
                    static_cast<int>(Components::CONTROLLERS));
   }
 
-  // Cache
+  // Label
   {
-    // Sprite frame cache
-    {
-      cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
-       "elf_idle.plist");
-      cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
-        "elf_walk.plist");
-    }
-}
+    scoreLabel = cocos2d::Label::createWithTTF("Score: " + std::to_string(score), "fonts/Marker Felt.ttf", 24);
+    scoreLabel->setPosition({ origin.x + visibleSize.width * 0.5f, origin.y + visibleSize.height * 0.8f });
 
-// Player
-{
-  player = new Player();
-  player->init("elf.png");
-
-  // Animations
-  {
-    // Idle
-    {
-      auto frames = getSpriteFrames("Elf_M_Idle_%d.png", 4);
-      auto animation =
-          cocos2d::Animation::createWithSpriteFrames(frames, 1 / 4.0f);
-      animation->retain();
-
-      player->addAnimation(PlayerState::IDLE, animation);
-    }
-
-    // Run
-    {
-      auto frames = getSpriteFrames("Elf_M_Walk_%d.png", 4);
-      auto animation =
-          cocos2d::Animation::createWithSpriteFrames(frames, 1 / 4.0f);
-      animation->retain();
-
-      player->addAnimation(PlayerState::MOVE_FORWARD, animation);
-      player->addAnimation(PlayerState::MOVE_RIGHT, animation);
-      player->addAnimation(PlayerState::MOVE_LEFT, animation);
-    }
-
-    // Attack
-    {}
-
-    setInitialPlayerPosition();
+    this->addChild(scoreLabel, static_cast<int>(Components::SCORE), static_cast<int>(Components::SCORE));
   }
+  
+  // Player
+  {
+    this->player = player;
+    setInitialPlayerPosition();
 
-  this->addChild(player, static_cast<int>(Components::PLAYER),
-                 static_cast<int>(Components::PLAYER));
-}
+    this->addChild(player, static_cast<int>(Components::PLAYER),
+      static_cast<int>(Components::PLAYER));
+  }
 
   // Contact listener
   {
     auto contactListener = cocos2d::EventListenerPhysicsContact::create();
     contactListener->onContactBegin =
         CC_CALLBACK_1(Level::onPhysicsContactBegin, this);
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener,
-                                                             this);
+    contactListener->onContactPreSolve =
+        CC_CALLBACK_2(Level::onPhysicsContactPreSolve, this);
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
   }
 
   // Ingame menu
@@ -145,6 +104,7 @@ bool Level::init(const std::string &backgroundFileName,
   }
 
   this->currentState = LevelState::NONE;
+  this->score = 0.0f;
   this->mainFunc = func;
 
   this->getPhysicsWorld()->setGravity(cocos2d::Vec2(0, 0));
@@ -162,22 +122,23 @@ bool Level::init(const std::string &backgroundFileName,
 void Level::update(float t) {
   if (currentState == LevelState::RUN) {
     auto joystickPosition =
-        controllerManager->getStickPosition().getNormalized();
+        controllerManager->getStickPosition();
+    cocos2d::log("Position -> {%f, %f}\n", joystickPosition.x, joystickPosition.y);
     auto isButtonPressed = controllerManager->getValue();
 
     // Update player position
     int playerLineIndex = player->getCurrentLineIndex();
-    if (joystickPosition.x > 0.5f) {
+    if (joystickPosition.x > INPUT_EPSILON) {
       if (playerLineIndex != getLinesCount() - 1) {
         player->moveRight(t, getLine(playerLineIndex + 1));
       }
-    } else if (joystickPosition.x < -0.5f) {
+    } else if (joystickPosition.x < -INPUT_EPSILON) {
       if (playerLineIndex != 0) {
         player->moveLeft(t, getLine(playerLineIndex - 1));
       }
-    } else if (joystickPosition.y > 0.5f) {
+    } else if (joystickPosition.y > INPUT_EPSILON) {
       player->moveForward(t);
-    } else if (joystickPosition.y < -0.5f) {
+    } else if (joystickPosition.y < -INPUT_EPSILON) {
       player->moveBackward(t);
     }
 
@@ -192,6 +153,9 @@ void Level::update(float t) {
       weatherManager->addWeatherEffect(WeatherType::RAIN);
       weatherManager->runWeatherEffects();
     }
+
+    // Score
+    scoreLabel->setString("Score : " + std::to_string(score));
   }
 }
 
@@ -199,6 +163,8 @@ void Level::setReload() {
   for (auto line : lines) {
     line->setReload();
   }
+
+  score = 0.0f;
   setInitialPlayerPosition();
 
   setState(LevelState::NONE);
@@ -224,19 +190,40 @@ void Level::setPause() {
 
 void Level::setGameOver() {
   if (currentState != LevelState::GAME_OVER) {
+    score = 0.0f;
+
     setState(LevelState::GAME_OVER);
   }
 }
 
 bool Level::onPhysicsContactBegin(cocos2d::PhysicsContact &contact) {
-  auto nodeA = contact.getShapeA()->getBody()->getNode();
-  auto nodeB = contact.getShapeB()->getBody()->getNode();
+  auto shapeA = contact.getShapeA();
+  auto shapeB = contact.getShapeB();
 
+  auto nodeA = shapeA->getBody()->getNode();
+  auto nodeB = shapeB->getBody()->getNode();
+  
   if (nodeA && nodeB) {
     int playerTag = player->getTag();
     if (nodeA->getTag() == playerTag || nodeB->getTag() == playerTag) {
-      setGameOver();
+      return true;
     }
+  }
+  return false;
+}
+
+bool Level::onPhysicsContactPreSolve(cocos2d::PhysicsContact &contact, PhysicsContactPreSolve& solve) {
+  auto nodeA = contact.getShapeA()->getBody()->getNode();
+  auto nodeB = contact.getShapeB()->getBody()->getNode();
+
+  auto contactPoint = contact.getContactData()->points[0];
+  if (player->getBoundingBox().containsPoint(contactPoint)) {
+    setGameOver();
+  }
+  else {
+    score += nodeA->getPosition().distance(nodeB->getPosition()) * 0.5f;
+
+    return false;
   }
 
   return true;

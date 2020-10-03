@@ -1,9 +1,10 @@
 #ifndef __GAMEMANAGER_H__
 #define __GAMEMANAGER_H__
 
+#include "cocos2d.h"
+
 #include "LevelManager.h"
 #include "StartMenu.h"
-#include "cocos2d.h"
 
 enum class GameState { NONE, MENU, PLAY};
 
@@ -29,6 +30,7 @@ class GameManager : public cocos2d::Scene {
   StartMenu *startMenu;
   GameOverMenu *gameOverMenu;
   LevelManager *levelManager;
+  Player *player;
 
   GameState currentState;
 };

@@ -104,6 +104,20 @@ void Line::setReload() {
   time = 0.0f - delay;
   lastRenderingObject = 0;
 
+  // Change characteristics
+  this->delay = static_cast<float>(cocos2d::random()) /
+    static_cast<float>(RAND_MAX / MAX_DELAY);
+  this->time -= delay;
+  this->frequency = MIN_SPAWN_FREQUENCY +
+    static_cast<float>(cocos2d::random()) /
+    static_cast<float>(RAND_MAX / (MAX_SPAWN_FREQUENCY -
+      MIN_SPAWN_FREQUENCY));
+
+  // Shuffle objects
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  std::shuffle(objects.begin(), objects.end(),
+    std::default_random_engine(seed));
+
   currentState = LineState::NONE;
 }
 

@@ -23,7 +23,6 @@ struct IngameMenu : public cocos2d::Node {
   inline void setState(IngameMenuState state) { currentState = state; }
   void show();
   void hide();
-
  private:
   std::string getSource(IngameMenuElements element) const
       noexcept;  // TODO: make for all components ElementSourceManager.cpp / .h
@@ -31,7 +30,6 @@ struct IngameMenu : public cocos2d::Node {
   void resetCallback(cocos2d::Ref *sender);
   void toMainMenuCallback(cocos2d::Ref *sender);
   void resumeCallback(cocos2d::Ref *sender);
-
  private:
   cocos2d::Sprite *background;
   cocos2d::ui::Button *menuButton;

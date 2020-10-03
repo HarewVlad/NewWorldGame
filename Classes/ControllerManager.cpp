@@ -15,9 +15,6 @@ bool ControllerManager::init(const cocos2d::Vec2 &position) {
 void ControllerManager::initJoystick() {
   auto screenSize = Director::getInstance()->getVisibleSize();
 
-  Rect joystickBaseDimensions;
-  joystickBaseDimensions = Rect(0, 0, 100.f, 100.0f);
-
   Point joystickBasePosition;
   joystickBasePosition =
       Vec2(-screenSize.width / 2.5f, -screenSize.height / 4.0f);
@@ -27,10 +24,15 @@ void ControllerManager::initJoystick() {
   sneakyJoystickBase->setPosition(joystickBasePosition);
   sneakyJoystickBase->setBackgroundSprite(
       Sprite::create("joystickBackground.png"));
+  sneakyJoystickBase->getBackgroundSprite()->setContentSize(
+    sneakyJoystickBase->getBackgroundSprite()->getContentSize() * 0.5f);
   sneakyJoystickBase->setThumbSprite(Sprite::create("joystickThumb.png"));
+  sneakyJoystickBase->getThumbSprite()->setContentSize(
+    sneakyJoystickBase->getThumbSprite()->getContentSize() * 0.5f);
 
   SneakyJoystick *aJoystick = new SneakyJoystick();
-  aJoystick->initWithRect(joystickBaseDimensions);
+  aJoystick->initWithRect({ 0, 0, sneakyJoystickBase->getBackgroundSprite()->getContentSize().width,
+    sneakyJoystickBase->getBackgroundSprite()->getContentSize().height });
   aJoystick->autorelease();
   sneakyJoystickBase->setJoystick(aJoystick);
   sneakyJoystickBase->setPosition(joystickBasePosition);

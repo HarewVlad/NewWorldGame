@@ -4,6 +4,8 @@
 
 #include "Player.h"
 
+// #define IS_OFFSET_ENABLED
+
 void Player::init(const std::string &filename) {
   // Orientation
   auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
@@ -12,8 +14,13 @@ void Player::init(const std::string &filename) {
   sprite = cocos2d::Sprite::create(filename);
   sprite->setScale(SCALE);
   sprite->setTag(TAG);
+#ifdef IS_OFFSET_ENABLED
   cocos2d::PhysicsBody *body = cocos2d::PhysicsBody::createBox(
-      sprite->getContentSize(), cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f));
+    sprite->getContentSize(), cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f), { sprite->getContentSize().width, sprite->getContentSize().height / 2.5f });
+#else
+  cocos2d::PhysicsBody *body = cocos2d::PhysicsBody::createBox(
+    getExpandZone().size, cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f));
+#endif
   body->setRotationEnable(false);
   body->setDynamic(true);
   body->setContactTestBitmask(0xFFFFFFFF);
@@ -23,16 +30,6 @@ void Player::init(const std::string &filename) {
 
   // Add components to node
   this->addChild(sprite);
-}
-
-void Player::show(float d) {
-  auto showAction = cocos2d::FadeIn::create(d);
-  this->runAction(showAction);
-}
-
-void Player::hide(float d) {
-  auto hideAction = cocos2d::FadeOut::create(d);
-  this->runAction(hideAction);
 }
 
 void Player::addAnimation(PlayerState state, cocos2d::Animation *animation) {
@@ -100,7 +97,11 @@ void Player::setMoveForwardState() {
   if (currentState != PlayerState::MOVE_FORWARD) {
     currentState = PlayerState::MOVE_FORWARD;
 
-    // ...
+    // Run animation
+    sprite->stopAllActions();  // TODO: stop only needed actions (RUN, JUMP ...)
+    auto animation = animations[static_cast<int>(PlayerState::MOVE_FORWARD)];
+    auto animate = cocos2d::Animate::create(animation);
+    sprite->runAction(cocos2d::RepeatForever::create(animate));
   }
 }
 
@@ -108,7 +109,11 @@ void Player::setMoveBackwardState() {
   if (currentState != PlayerState::MOVE_BACKWARD) {
     currentState = PlayerState::MOVE_BACKWARD;
 
-    // ...
+    // Run animation
+    sprite->stopAllActions();  // TODO: stop only needed actions (RUN, JUMP ...)
+    auto animation = animations[static_cast<int>(PlayerState::MOVE_BACKWARD)];
+    auto animate = cocos2d::Animate::create(animation);
+    sprite->runAction(cocos2d::RepeatForever::create(animate));
   }
 }
 
@@ -116,7 +121,11 @@ void Player::setMoveRightState() {
   if (currentState != PlayerState::MOVE_RIGHT) {
     currentState = PlayerState::MOVE_RIGHT;
 
-    // ...
+    // Run animation
+    sprite->stopAllActions();  // TODO: stop only needed actions (RUN, JUMP ...)
+    auto animation = animations[static_cast<int>(PlayerState::MOVE_RIGHT)];
+    auto animate = cocos2d::Animate::create(animation);
+    sprite->runAction(cocos2d::RepeatForever::create(animate));
   }
 }
 
@@ -124,7 +133,11 @@ void Player::setMoveLeftState() {
   if (currentState != PlayerState::MOVE_LEFT) {
     currentState = PlayerState::MOVE_LEFT;
 
-    // ..
+    // Run animation
+    sprite->stopAllActions();  // TODO: stop only needed actions (RUN, JUMP ...)
+    auto animation = animations[static_cast<int>(PlayerState::MOVE_LEFT)];
+    auto animate = cocos2d::Animate::create(animation);
+    sprite->runAction(cocos2d::RepeatForever::create(animate));
   }
 }
 
@@ -221,4 +234,20 @@ bool Player::isNotMoving() {
          currentState != PlayerState::MOVE_RIGHT &&
          currentState != PlayerState::MOVE_FORWARD &&
          currentState != PlayerState::MOVE_BACKWARD;
+}
+
+cocos2d::Rect Player::getExpandZone() {
+  return cocos2d::Rect(
+    this->getPositionX() + sprite->getPositionX() - sprite->getContentSize().width * 0.5f - EXPAND_ZONE_OFFSET,
+    this->getPositionY() + sprite->getPositionY() - sprite->getContentSize().height * 0.5f - EXPAND_ZONE_OFFSET,
+    sprite->getContentSize().width + EXPAND_ZONE_OFFSET * 2.0f,
+    sprite->getContentSize().height + EXPAND_ZONE_OFFSET * 2.0f);
+}
+
+cocos2d::Rect Player::getBoundingBox() {
+  return cocos2d::Rect(
+    this->getPositionX() + sprite->getPositionX() - sprite->getContentSize().width * 0.5f,
+    this->getPositionY() + sprite->getPositionY() - sprite->getContentSize().height * 0.5f,
+    sprite->getContentSize().width,
+    sprite->getContentSize().height);
 }

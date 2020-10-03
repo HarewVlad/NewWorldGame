@@ -5,13 +5,14 @@
 #ifndef PROJ_ANDROID_LEVEL_H
 #define PROJ_ANDROID_LEVEL_H
 
+#include "cocos2d.h"
+
 #include "ControllerManager.h"
 #include "GameOverMenu.h"
 #include "IngameMenu.h"
 #include "Line.h"
 #include "Player.h"
 #include "WeatherManager.h"
-#include "cocos2d.h"
 
 enum class LevelState { NONE, RUN, PAUSE, WIN, GAME_OVER };
 
@@ -21,12 +22,14 @@ enum class Components {
   PLAYER,
   WEATHER,
   CONTROLLERS,
+  SCORE,
   INGAME_MENU
 };
 
 class Level : public cocos2d::Scene {
  public:
-  bool init(const std::string &backgroundName,
+  bool init(Player *player,
+            const std::string &backgroundName,
             const std::string &ingameMenuBackgroundFileName,
             const std::vector<ObjectType> &objectsVariation, int numLines,
             int numObjectsPerLine, float speed,
@@ -43,12 +46,11 @@ class Level : public cocos2d::Scene {
   inline Line *getLine(int i) const { return lines[i]; }
   inline size_t getLinesCount() const { return lines.size(); }
   inline LevelState getState() const { return currentState; }
-
  private:
   void setInitialPlayerPosition();
   bool onPhysicsContactBegin(cocos2d::PhysicsContact &contact);
+  bool onPhysicsContactPreSolve(cocos2d::PhysicsContact &contact, cocos2d::PhysicsContactPreSolve& solve);
   void onIngameMenu(IngameMenu *ingameMenu);
-
  private:
   ControllerManager *controllerManager;
   IngameMenu *ingameMenu;
@@ -56,12 +58,20 @@ class Level : public cocos2d::Scene {
   WeatherManager *weatherManager;
   Player *player;
 
+  cocos2d::Label *scoreLabel;
+
   cocos2d::Sprite *background;
   std::vector<Line *> lines;
 
   std::function<void(Level *)> mainFunc;
 
   LevelState currentState;
+
+  int score;
+
+  // Constants
+  const float INPUT_EPSILON = 20.0f;
+  const float CONTACT_DISTANCE_EPSILON = 10.0f;
 };
 
 #endif  // PROJ_ANDROID_LEVEL_H

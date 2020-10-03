@@ -18,11 +18,9 @@ enum class PlayerState {
   ATTACK,
 };
 
-// TODO: inheritance from Character
+// TODO: Design and architecture
 struct Player : public cocos2d::Node {
   void init(const std::string &filename);
-  void show(float d = 0);
-  void hide(float d = 0);
   void addAnimation(PlayerState state, cocos2d::Animation *animation);
   inline PlayerState getState() { return currentState; }
   inline cocos2d::Sprite *getSprite() { return sprite; }
@@ -36,6 +34,8 @@ struct Player : public cocos2d::Node {
   void moveBackward(float t);
   void attack(float t);
   void update(float t) override;
+  cocos2d::Rect getExpandZone();
+  cocos2d::Rect getBoundingBox();
 
  private:
   void setAttackState();
@@ -52,8 +52,12 @@ struct Player : public cocos2d::Node {
   int currentLineIndex;
   PlayerState currentState;
 
+  cocos2d::Rect *expandZone;
+
+  // Constants
   const float SCALE = 1.0f;
   const float SPEED = 1.0f;
+  const float EXPAND_ZONE_OFFSET = 10.0f;
   const int TAG = 0x33;
 };
 
