@@ -4,8 +4,7 @@
 
 #include "StartMenu.h"
 
-bool StartMenu::init(const std::string &filename,
-                     const std::function<void(StartMenu *)> &func) {
+bool StartMenu::init(const std::function<void(StartMenu *)> &func) {
   if (!Scene::init()) {
     return false;
   }
@@ -18,7 +17,7 @@ bool StartMenu::init(const std::string &filename,
   auto size = cocos2d::Director::getInstance()->getVisibleSize();
 
   // Create background
-  background = cocos2d::Sprite::create(filename);
+  background = cocos2d::Sprite::create("StartMenu\\background.jpg");
   background->setScaleX(size.width / background->getContentSize().width);
   background->setPosition(origin + size * 0.5f);
 

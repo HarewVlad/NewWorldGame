@@ -7,8 +7,6 @@
 // #define DEBUG_ENABLED
 
 bool Level::init(Player *player,
-                 const std::string &backgroundFileName,
-                 const std::string &ingameMenuBackgroundFileName,
                  const std::vector<ObjectType> &objectsVariation, int numLines,
                  int numObjectsPerLine, float speed,
                  const std::function<void(Level *)> &func) {
@@ -21,7 +19,7 @@ bool Level::init(Player *player,
 
   // Background
   {
-    background = cocos2d::Sprite::create(backgroundFileName);
+    background = cocos2d::Sprite::create("Level\\background.png");
     background->setScaleX(visibleSize.width /
                           background->getContentSize().width);
     background->setPosition(origin + visibleSize * 0.5f);
@@ -101,8 +99,7 @@ bool Level::init(Player *player,
   // Ingame menu
   {
     ingameMenu = new IngameMenu();
-    assert(ingameMenu->init(ingameMenuBackgroundFileName,
-                            CC_CALLBACK_1(Level::onIngameMenu, this)));
+    assert(ingameMenu->init(CC_CALLBACK_1(Level::onIngameMenu, this)));
 
     this->addChild(ingameMenu, static_cast<int>(Components::INGAME_MENU),
                    static_cast<int>(Components::INGAME_MENU));
@@ -137,7 +134,6 @@ void Level::update(float t) {
   if (currentState == LevelState::RUN) {
     auto joystickPosition =
         controllerManager->getStickPosition();
-    cocos2d::log("Position -> {%f, %f}\n", joystickPosition.x, joystickPosition.y);
     auto isButtonPressed = controllerManager->getValue();
 
     // Update player position
@@ -258,7 +254,7 @@ bool Level::onPhysicsContactPreSolve(cocos2d::PhysicsContact &contact, PhysicsCo
       }
     }
   }
-  else {
+  else if (player->getCollisionState()) {
     score += nodeA->getPosition().distance(nodeB->getPosition()) * 0.5f;
 
     return false;

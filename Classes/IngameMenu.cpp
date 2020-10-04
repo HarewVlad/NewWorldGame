@@ -4,8 +4,7 @@
 
 #include "IngameMenu.h"
 
-bool IngameMenu::init(const std::string &backgroundFileName,
-                      const std::function<void(IngameMenu *)> &func) {
+bool IngameMenu::init(const std::function<void(IngameMenu *)> &func) {
   this->mainFunc = func;
   this->currentState = IngameMenuState::NONE;
 
@@ -13,7 +12,7 @@ bool IngameMenu::init(const std::string &backgroundFileName,
   auto size = cocos2d::Director::getInstance()->getVisibleSize();
 
   // Init background
-  background = cocos2d::Sprite::create(backgroundFileName);
+  background = cocos2d::Sprite::create("IngameMenu\\background.png");
   background->setScaleX(size.width / background->getContentSize().width);
   background->setPosition(origin + size * 0.5f);
 
@@ -45,9 +44,9 @@ bool IngameMenu::init(const std::string &backgroundFileName,
 
   // Init pause button
   menuButton = cocos2d::ui::Button::create(
-      getSource(IngameMenuElements::PAUSE_BUTTON_NORMAL),
-      getSource(IngameMenuElements::PAUSE_BUTTON_SELECTED),
-      getSource(IngameMenuElements::PAUSE_BUTTON_DISABLED));
+      "IngameMenu\\Button\\normal_image.png",
+      "IngameMenu\\Button\\selected_image.png",
+      "IngameMenu\\Button\\disabled_image.png");
   menuButton->setTitleFontName("fonts/Marker Felt.ttf");
   menuButton->setTitleText("Menu");
   menuButton->setPosition(
@@ -101,17 +100,6 @@ void IngameMenu::resumeCallback(cocos2d::Ref *sender) {
   }
 
   hide();
-}
-
-std::string IngameMenu::getSource(IngameMenuElements element) const noexcept {
-  switch (element) {
-    case IngameMenuElements::PAUSE_BUTTON_NORMAL:
-      return "normal_image.png";
-    case IngameMenuElements::PAUSE_BUTTON_DISABLED:
-      return "disabled_image.png";
-    case IngameMenuElements::PAUSE_BUTTON_SELECTED:
-      return "selected_image.png";
-  }
 }
 
 void IngameMenu::show() {

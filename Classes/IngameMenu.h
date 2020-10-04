@@ -10,26 +10,17 @@
 
 enum class IngameMenuState { NONE, RESUME, RESET, TO_MAIN_MENU };
 
-enum class IngameMenuElements {
-  PAUSE_BUTTON_NORMAL,
-  PAUSE_BUTTON_SELECTED,
-  PAUSE_BUTTON_DISABLED
-};
-
 struct IngameMenu : public cocos2d::Node {
-  bool init(const std::string &backgroundFileName,
-            const std::function<void(IngameMenu *)> &func);
+  bool init(const std::function<void(IngameMenu *)> &func);
   inline IngameMenuState getState() { return currentState; }
   inline void setState(IngameMenuState state) { currentState = state; }
-  void show();
-  void hide();
  private:
-  std::string getSource(IngameMenuElements element) const
-      noexcept;  // TODO: make for all components ElementSourceManager.cpp / .h
   void onMenuCallback(cocos2d::Ref *sender);
   void resetCallback(cocos2d::Ref *sender);
   void toMainMenuCallback(cocos2d::Ref *sender);
   void resumeCallback(cocos2d::Ref *sender);
+  void show();
+  void hide();
  private:
   cocos2d::Sprite *background;
   cocos2d::ui::Button *menuButton;

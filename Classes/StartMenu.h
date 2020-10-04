@@ -10,8 +10,7 @@
 enum class StartMenuState { NONE, START, EXIT };
 
 struct StartMenu : public cocos2d::Scene {
-  bool init(const std::string &filename,
-            const std::function<void(StartMenu *)> &func);
+  bool init(const std::function<void(StartMenu *)> &func);
   inline StartMenuState getState() { return currentState; }
   inline void setState(StartMenuState state) { currentState = state; }
   void update(float t);

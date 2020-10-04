@@ -32,8 +32,7 @@ bool GameManager::init() {
   // Start menu
   {
     startMenu = new StartMenu();
-    assert(startMenu->init("menuBackground.jpg",
-                           CC_CALLBACK_1(GameManager::onStartMenu, this)));
+    assert(startMenu->init(CC_CALLBACK_1(GameManager::onStartMenu, this)));
   }
 
   // Game over menu
@@ -119,22 +118,12 @@ bool GameManager::init() {
     }
   }
 
-  // Levels
+  // Level
   {
-    levelManager = new LevelManager();
-    levelManager->init();
-
-    // Level 1
-    {
-      // TODO: fix level architecture (Make 1 scene and reuse it)
-      Level *level = new Level();
-      level->init(player,
-                  "ingameMenuBackground.png", "worldBackground.png",
-                  {ObjectType::BEER, ObjectType::FISH}, 4, 10, 0.9f,
-                  CC_CALLBACK_1(GameManager::onLevel, this));
-
-      levelManager->addLevel(1, level);
-    }
+    level = new Level();
+    level->init(player,
+                {ObjectType::BEER, ObjectType::FISH}, 4, 10, 0.9f,
+                CC_CALLBACK_1(GameManager::onLevel, this));
   }
 
   this->currentState = GameState::NONE;
@@ -202,11 +191,11 @@ void GameManager::setMenu() {
 }
 
 void GameManager::setPlay() {
-  levelManager->reloadCurrentLevel();
-  levelManager->startCurrentLevel();
+  level->setReload();
+  level->setStart();
 
   currentState = GameState::PLAY;
 
   Director::getInstance()->pushScene(TransitionFade::create(
-    0.5, levelManager->getCurrentLevel(), Color3B(0, 0, 0)));
+    0.5, level, Color3B(0, 0, 0)));
 }

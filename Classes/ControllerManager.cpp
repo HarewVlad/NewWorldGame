@@ -23,10 +23,10 @@ void ControllerManager::initJoystick() {
   sneakyJoystickBase->init();
   sneakyJoystickBase->setPosition(joystickBasePosition);
   sneakyJoystickBase->setBackgroundSprite(
-      Sprite::create("joystickBackground.png"));
+      Sprite::create("Controllers\\joystickBackground.png"));
   sneakyJoystickBase->getBackgroundSprite()->setContentSize(
     sneakyJoystickBase->getBackgroundSprite()->getContentSize() * 0.5f);
-  sneakyJoystickBase->setThumbSprite(Sprite::create("joystickThumb.png"));
+  sneakyJoystickBase->setThumbSprite(Sprite::create("Controllers\\joystickThumb.png"));
   sneakyJoystickBase->getThumbSprite()->setContentSize(
     sneakyJoystickBase->getThumbSprite()->getContentSize() * 0.5f);
 
@@ -54,10 +54,10 @@ void ControllerManager::initButton() {
   sneakyButtonBase = SneakyButtonSkinnedBase::create();
   sneakyButtonBase->setPosition(attackButtonPosition);
 
-  sneakyButtonBase->setDefaultSprite(Sprite::create("joystickThumb.png"));
-  sneakyButtonBase->setActivatedSprite(Sprite::create("joystickThumb.png"));
-  sneakyButtonBase->setDisabledSprite(Sprite::create("joystickThumb.png"));
-  sneakyButtonBase->setPressSprite(Sprite::create("joystickThumb.png"));
+  sneakyButtonBase->setDefaultSprite(Sprite::create("Controllers\\joystickThumb.png"));
+  sneakyButtonBase->setActivatedSprite(Sprite::create("Controllers\\joystickThumb.png"));
+  sneakyButtonBase->setDisabledSprite(Sprite::create("Controllers\\joystickThumb.png"));
+  sneakyButtonBase->setPressSprite(Sprite::create("Controllers\\joystickThumb.png"));
 
   SneakyButton *aAttackButton = SneakyButton::create();
   aAttackButton->initWithRect(attackButtonDimensions);

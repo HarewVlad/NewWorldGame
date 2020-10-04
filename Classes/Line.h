@@ -44,7 +44,7 @@ struct Line : public cocos2d::Node {
 
   // Constants
   const float MAX_DELAY = 5.5f;
-  const float MIN_SPAWN_FREQUENCY = 0.5f;
+  const float MIN_SPAWN_FREQUENCY = 1.5f;
   const float MAX_SPAWN_FREQUENCY = 5.0f;
   const float SCALE = 1.0f;
 };

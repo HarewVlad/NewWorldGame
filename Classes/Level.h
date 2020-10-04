@@ -31,8 +31,6 @@ enum class Components {
 class Level : public cocos2d::Scene {
  public:
   bool init(Player *player,
-            const std::string &backgroundName,
-            const std::string &ingameMenuBackgroundFileName,
             const std::vector<ObjectType> &objectsVariation, int numLines,
             int numObjectsPerLine, float speed,
             const std::function<void(Level *)> &func);
