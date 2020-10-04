@@ -251,3 +251,17 @@ cocos2d::Rect Player::getBoundingBox() {
     sprite->getContentSize().width,
     sprite->getContentSize().height);
 }
+
+void Player::setHit() {
+  // Disable collisions when hit
+  sprite->getPhysicsBody()->setEnabled(false);
+
+  auto blinkCallback = cocos2d::CallFunc::create([this]() {
+    // When blinking finished - enable
+    sprite->getPhysicsBody()->setEnabled(true);
+  });
+
+  auto blink = cocos2d::Blink::create(1, 3);
+  auto seq = cocos2d::Sequence::create(blink, blinkCallback, nullptr);
+  this->runAction(seq);
+}

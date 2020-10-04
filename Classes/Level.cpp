@@ -4,7 +4,7 @@
 
 #include "Level.h"
 
-#define DEBUG_ENABLED
+// #define DEBUG_ENABLED
 
 bool Level::init(Player *player,
                  const std::string &backgroundFileName,
@@ -85,6 +85,19 @@ bool Level::init(Player *player,
     _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
   }
 
+  // Hearts
+  {
+    cocos2d::Vec2 position = { origin.x + visibleSize.width * 0.8f, origin.y + visibleSize.height * 0.9f};
+    for (int i = 0; i < NUM_LIVES; ++i) {
+      Heart *heart = new Heart();
+      (void)heart->init();
+      heart->setPosition(position);
+      position.x += heart->getHeartSize().width;
+      hearts.push_back(heart);
+      this->addChild(heart, static_cast<int>(Components::LIVES), static_cast<int>(Components::LIVES));
+    }
+  }
+
   // Ingame menu
   {
     ingameMenu = new IngameMenu();
@@ -105,6 +118,7 @@ bool Level::init(Player *player,
 
   this->currentState = LevelState::NONE;
   this->score = 0.0f;
+  this->numLivesLeft = 3;
   this->mainFunc = func;
 
   this->getPhysicsWorld()->setGravity(cocos2d::Vec2(0, 0));
@@ -156,6 +170,16 @@ void Level::update(float t) {
 
     // Score
     scoreLabel->setString("Score : " + std::to_string(score));
+
+    // Lives
+    // TODO: redo this shit
+    switch (numLivesLeft) {
+    case 3:
+      break;
+    case 2: case 1: case 0:
+      hearts[numLivesLeft]->setVisible(false);
+      break;
+    }
   }
 }
 
@@ -164,7 +188,12 @@ void Level::setReload() {
     line->setReload();
   }
 
+  for (auto heart : hearts) {
+    heart->setVisible(true);
+  }
+
   score = 0.0f;
+  numLivesLeft = 3;
   setInitialPlayerPosition();
 
   setState(LevelState::NONE);
@@ -218,7 +247,16 @@ bool Level::onPhysicsContactPreSolve(cocos2d::PhysicsContact &contact, PhysicsCo
 
   auto contactPoint = contact.getContactData()->points[0];
   if (player->getBoundingBox().containsPoint(contactPoint)) {
-    setGameOver();
+    if (player->getCollisionState()) {
+      if (numLivesLeft != 0) {
+        numLivesLeft--;
+
+        player->setHit();
+      }
+      else {
+        setGameOver();
+      }
+    }
   }
   else {
     score += nodeA->getPosition().distance(nodeB->getPosition()) * 0.5f;

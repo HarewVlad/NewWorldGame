@@ -36,6 +36,10 @@ struct Player : public cocos2d::Node {
   void update(float t) override;
   cocos2d::Rect getExpandZone();
   cocos2d::Rect getBoundingBox();
+  void setHit();
+  inline bool getCollisionState() const {
+    return sprite->getPhysicsBody()->isEnabled();
+  }
 
  private:
   void setAttackState();

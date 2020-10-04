@@ -13,6 +13,7 @@
 #include "Line.h"
 #include "Player.h"
 #include "WeatherManager.h"
+#include "Heart.h"
 
 enum class LevelState { NONE, RUN, PAUSE, WIN, GAME_OVER };
 
@@ -23,6 +24,7 @@ enum class Components {
   WEATHER,
   CONTROLLERS,
   SCORE,
+  LIVES,
   INGAME_MENU
 };
 
@@ -56,6 +58,7 @@ class Level : public cocos2d::Scene {
   IngameMenu *ingameMenu;
   GameOverMenu *gameOverMenu;
   WeatherManager *weatherManager;
+  std::vector<Heart *> hearts;
   Player *player;
 
   cocos2d::Label *scoreLabel;
@@ -68,10 +71,12 @@ class Level : public cocos2d::Scene {
   LevelState currentState;
 
   int score;
+  int numLivesLeft;
 
   // Constants
   const float INPUT_EPSILON = 20.0f;
   const float CONTACT_DISTANCE_EPSILON = 10.0f;
+  const int NUM_LIVES = 3;
 };
 
 #endif  // PROJ_ANDROID_LEVEL_H
