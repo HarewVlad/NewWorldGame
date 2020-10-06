@@ -4,7 +4,7 @@
 
 #include "Player.h"
 
-// #define IS_OFFSET_ENABLED
+#define IS_OFFSET_ENABLED
 
 void Player::init(const std::string &filename) {
   // Orientation
@@ -22,7 +22,7 @@ void Player::init(const std::string &filename) {
     getExpandZone().size, cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f));
 #endif
   body->setRotationEnable(false);
-  body->setDynamic(true);
+  body->setDynamic(false);
   body->setContactTestBitmask(0xFFFFFFFF);
   sprite->setPhysicsBody(body);
 
@@ -47,17 +47,11 @@ void Player::setState(PlayerState state) {
     case PlayerState::ATTACK:
       setAttackState();
       break;
-    case PlayerState::MOVE_FORWARD:
-      setMoveForwardState();
-      break;
     case PlayerState::MOVE_LEFT:
       setMoveLeftState();
       break;
     case PlayerState::MOVE_RIGHT:
       setMoveRightState();
-      break;
-    case PlayerState::MOVE_BACKWARD:
-      setMoveBackwardState();
       break;
   }
 }
@@ -93,30 +87,6 @@ void Player::setIdleState() {
   }
 }
 
-void Player::setMoveForwardState() {
-  if (currentState != PlayerState::MOVE_FORWARD) {
-    currentState = PlayerState::MOVE_FORWARD;
-
-    // Run animation
-    sprite->stopAllActions();  // TODO: stop only needed actions (RUN, JUMP ...)
-    auto animation = animations[static_cast<int>(PlayerState::MOVE_FORWARD)];
-    auto animate = cocos2d::Animate::create(animation);
-    sprite->runAction(cocos2d::RepeatForever::create(animate));
-  }
-}
-
-void Player::setMoveBackwardState() {
-  if (currentState != PlayerState::MOVE_BACKWARD) {
-    currentState = PlayerState::MOVE_BACKWARD;
-
-    // Run animation
-    sprite->stopAllActions();  // TODO: stop only needed actions (RUN, JUMP ...)
-    auto animation = animations[static_cast<int>(PlayerState::MOVE_BACKWARD)];
-    auto animate = cocos2d::Animate::create(animation);
-    sprite->runAction(cocos2d::RepeatForever::create(animate));
-  }
-}
-
 void Player::setMoveRightState() {
   if (currentState != PlayerState::MOVE_RIGHT) {
     currentState = PlayerState::MOVE_RIGHT;
@@ -141,7 +111,7 @@ void Player::setMoveLeftState() {
   }
 }
 
-void Player::moveRight(float t, Line *line) {
+void Player::moveRight(Line *line) {
   if (isNotMoving()) {
     // Set state
     setState(PlayerState::MOVE_RIGHT);
@@ -149,14 +119,14 @@ void Player::moveRight(float t, Line *line) {
     currentLineIndex++;
     // Change position
     auto move = cocos2d::MoveTo::create(
-        1, {line->getPositionX(), this->getPositionY()});
+        2, {line->getPositionX(), this->getPositionY()});
     move->setTag(static_cast<int>(PlayerState::MOVE_RIGHT));
 
     this->runAction(move);
   }
 }
 
-void Player::moveLeft(float t, Line *line) {
+void Player::moveLeft(Line *line) {
   if (isNotMoving()) {
     // Set state
     setState(PlayerState::MOVE_LEFT);
@@ -164,46 +134,10 @@ void Player::moveLeft(float t, Line *line) {
     currentLineIndex--;
     // Change position
     auto move = cocos2d::MoveTo::create(
-        1, {line->getPositionX(), this->getPositionY()});
+        2, {line->getPositionX(), this->getPositionY()});
     move->setTag(static_cast<int>(PlayerState::MOVE_LEFT));
 
     this->runAction(move);
-  }
-}
-
-void Player::moveForward(float t) {
-  if (isNotMoving()) {
-    // Change state
-    setState(PlayerState::MOVE_FORWARD);
-    // Move
-    auto size = cocos2d::Director::getInstance()->getVisibleSize();
-    auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
-
-    auto position = this->getPosition();
-    if (position.y < origin.y + size.height) {
-      auto move = cocos2d::MoveBy::create(1, {0, SPEED});
-      move->setTag(static_cast<int>(PlayerState::MOVE_FORWARD));
-
-      this->runAction(move);
-    }
-  }
-}
-
-void Player::moveBackward(float t) {
-  if (isNotMoving()) {
-    // Change state
-    setState(PlayerState::MOVE_FORWARD);
-    // Move
-    auto size = cocos2d::Director::getInstance()->getVisibleSize();
-    auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
-
-    auto position = this->getPosition();
-    if (position.y > origin.y) {
-      auto move = cocos2d::MoveBy::create(1, {0, -SPEED});
-      move->setTag(static_cast<int>(PlayerState::MOVE_BACKWARD));
-
-      this->runAction(move);
-    }
   }
 }
 
@@ -219,21 +153,15 @@ void Player::update(float t) {
                          static_cast<int>(PlayerState::MOVE_RIGHT)) > 0;
   bool isMoveLeft = this->getNumberOfRunningActionsByTag(
                         static_cast<int>(PlayerState::MOVE_LEFT)) > 0;
-  bool isMoveForward = this->getNumberOfRunningActionsByTag(
-                           static_cast<int>(PlayerState::MOVE_FORWARD)) > 0;
-  bool isMoveBackward = this->getNumberOfRunningActionsByTag(
-                            static_cast<int>(PlayerState::MOVE_BACKWARD)) > 0;
 
-  if (!isMoveForward && !isMoveLeft && !isMoveRight && !isMoveBackward) {
+  if (!isMoveLeft && !isMoveRight) {
     setState(PlayerState::IDLE);
   }
 }
 
 bool Player::isNotMoving() {
   return currentState != PlayerState::MOVE_LEFT &&
-         currentState != PlayerState::MOVE_RIGHT &&
-         currentState != PlayerState::MOVE_FORWARD &&
-         currentState != PlayerState::MOVE_BACKWARD;
+         currentState != PlayerState::MOVE_RIGHT;
 }
 
 cocos2d::Rect Player::getExpandZone() {

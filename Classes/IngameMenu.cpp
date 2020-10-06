@@ -12,26 +12,26 @@ bool IngameMenu::init(const std::function<void(IngameMenu *)> &func) {
   auto size = cocos2d::Director::getInstance()->getVisibleSize();
 
   // Init background
-  background = cocos2d::Sprite::create("IngameMenu\\background.png");
+  background = cocos2d::Sprite::create("IngameMenu/background.png");
   background->setScaleX(size.width / background->getContentSize().width);
   background->setPosition(origin + size * 0.5f);
 
   // Create menu labels
   auto resumeLabel =
-      cocos2d::Label::createWithTTF("Resume", "fonts/Marker Felt.ttf", 24);
-  resumeLabel->setColor({255, 0, 0});
+      cocos2d::Label::createWithTTF("Resume", "fonts/ThaleahFat.ttf", 28);
+  resumeLabel->setColor(cocos2d::Color3B::YELLOW);
   auto resetLabel =
-      cocos2d::Label::createWithTTF("Reset", "fonts/Marker Felt.ttf", 24);
-  resetLabel->setColor({255, 0, 0});
+      cocos2d::Label::createWithTTF("Reset", "fonts/ThaleahFat.ttf", 28);
+  resetLabel->setColor(cocos2d::Color3B::YELLOW);
   auto toMainMenuLabel = cocos2d::Label::createWithTTF(
-      "To Main Menu", "fonts/Marker Felt.ttf", 24);
-  toMainMenuLabel->setColor({255, 0, 0});
+      "To Main Menu", "fonts/ThaleahFat.ttf", 28);
+  toMainMenuLabel->setColor(cocos2d::Color3B::YELLOW);
 
   auto resume = cocos2d::MenuItemLabel::create(resumeLabel);
-  resume->setPositionY(48);
+  resume->setPositionY(56);
   resume->setCallback(CC_CALLBACK_1(IngameMenu::resumeCallback, this));
   auto reset = cocos2d::MenuItemLabel::create(resetLabel);
-  reset->setPositionY(24);
+  reset->setPositionY(28);
   reset->setCallback(CC_CALLBACK_1(IngameMenu::resetCallback, this));
   auto toMainMenu = cocos2d::MenuItemLabel::create(toMainMenuLabel);
   toMainMenu->setPositionY(0);
@@ -43,21 +43,17 @@ bool IngameMenu::init(const std::function<void(IngameMenu *)> &func) {
   menu->addChild(toMainMenu);
 
   // Init pause button
-  menuButton = cocos2d::ui::Button::create(
-      "IngameMenu\\Button\\normal_image.png",
-      "IngameMenu\\Button\\selected_image.png",
-      "IngameMenu\\Button\\disabled_image.png");
-  menuButton->setTitleFontName("fonts/Marker Felt.ttf");
-  menuButton->setTitleText("Menu");
-  menuButton->setPosition(
+  menuEnterButton = Button::create("IngameMenu/Button/Square.png", 
+    cocos2d::Color3B::BLUE, 
+    CC_CALLBACK_1(IngameMenu::onMenuCallback, this));
+  menuEnterButton->setPosition(
       cocos2d::Vec2(origin.x + size.width / 8.0f,
                     origin.y + size.height - size.height / 8.0f));
-  menuButton->addTouchEventListener(
-      CC_CALLBACK_1(IngameMenu::onMenuCallback, this));
+  menuEnterButton->setText("Menu", cocos2d::Color3B::YELLOW);
 
   this->addChild(background, 1);
   this->addChild(menu, 1);
-  this->addChild(menuButton, 0);
+  this->addChild(menuEnterButton, 0);
 
   hide();
 
@@ -103,7 +99,7 @@ void IngameMenu::resumeCallback(cocos2d::Ref *sender) {
 }
 
 void IngameMenu::show() {
-  menuButton->setVisible(false);
+  menuEnterButton->setVisible(false);
 
   menu->setEnabled(true);
   menu->setVisible(true);
@@ -113,7 +109,7 @@ void IngameMenu::show() {
 }
 
 void IngameMenu::hide() {
-  menuButton->setVisible(true);
+  menuEnterButton->setVisible(true);
 
   menu->setEnabled(false);
   menu->setVisible(false);

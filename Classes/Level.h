@@ -59,9 +59,8 @@ class Level : public cocos2d::Scene {
   std::vector<Heart *> hearts;
   Player *player;
 
-  cocos2d::Label *scoreLabel;
-
   cocos2d::Sprite *background;
+  cocos2d::Label *scoreLabel;
   std::vector<Line *> lines;
 
   std::function<void(Level *)> mainFunc;
@@ -75,6 +74,7 @@ class Level : public cocos2d::Scene {
   const float INPUT_EPSILON = 20.0f;
   const float CONTACT_DISTANCE_EPSILON = 10.0f;
   const int NUM_LIVES = 3;
+  const int NUM_POINTS_PER_TICK = 1;
 };
 
 #endif  // PROJ_ANDROID_LEVEL_H

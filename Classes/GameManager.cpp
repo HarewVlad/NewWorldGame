@@ -45,8 +45,9 @@ bool GameManager::init() {
   // Player
   {
     player = new Player();
-    player->init("elf.png");
-    
+    player->init("detective.png");
+
+    /*
     // Sprite frame cache
     {
       cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
@@ -54,8 +55,8 @@ bool GameManager::init() {
       cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
         "elf_walk.plist");
     }
+    */
 
-    /*
     // Cache
     {
       cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
@@ -63,9 +64,8 @@ bool GameManager::init() {
       cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
         "detective_run.plist");
     }
-    */
 
-    /*
+
     // Animations
     {
       // Idle
@@ -85,13 +85,13 @@ bool GameManager::init() {
           cocos2d::Animation::createWithSpriteFrames(frames, 1 / 8.0f);
         animation->retain();
 
-        player->addAnimation(PlayerState::MOVE_FORWARD, animation);
         player->addAnimation(PlayerState::MOVE_RIGHT, animation);
         player->addAnimation(PlayerState::MOVE_LEFT, animation);
       }
     }
-    */
 
+
+    /*
     // Animations
     {
       // Idle
@@ -116,13 +116,14 @@ bool GameManager::init() {
         player->addAnimation(PlayerState::MOVE_LEFT, animation);
       }
     }
+    */
   }
 
   // Level
   {
     level = new Level();
     level->init(player,
-                {ObjectType::BEER, ObjectType::FISH}, 4, 10, 0.9f,
+                {ObjectType::BEER, ObjectType::FISH}, 4, 10, 3.0f,
                 CC_CALLBACK_1(GameManager::onLevel, this));
   }
 

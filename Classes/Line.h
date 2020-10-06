@@ -27,6 +27,9 @@ struct Line : public cocos2d::Node {
   void setReload();
   void setStart();
   void setPause();
+  inline void setSpeed(float speed) {
+    this->speed = speed;
+  }
  private:
   Object createObject(ObjectType type, float scale);
   std::string getObjectSource(ObjectType type) const;
@@ -43,9 +46,9 @@ struct Line : public cocos2d::Node {
   LineState currentState;
 
   // Constants
-  const float MAX_DELAY = 5.5f;
-  const float MIN_SPAWN_FREQUENCY = 1.5f;
-  const float MAX_SPAWN_FREQUENCY = 5.0f;
+  const float MAX_DELAY = 2.5f;
+  const float MIN_SPAWN_FREQUENCY = 0.5f;
+  const float MAX_SPAWN_FREQUENCY = 4.0f;
   const float SCALE = 1.0f;
 };
 

@@ -59,7 +59,6 @@ list(APPEND GAME_SOURCE
      Classes/AppDelegate.cpp
         Classes/GameManager.cpp
         Classes/StartMenu.cpp
-        Classes/LevelManager.cpp
         Classes/WeatherManager.cpp
         Classes/Player.cpp
         Classes/SneakyJoystickSkinnedBase.cpp
@@ -72,12 +71,12 @@ list(APPEND GAME_SOURCE
         Classes/IngameMenu.cpp
         Classes/Line.cpp
         Classes/GameOverMenu.cpp
+        Classes/Heart.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
         Classes/GameManager.h
         Classes/StartMenu.h
-        Classes/LevelManager.h
         Classes/WeatherManager.h
         Classes/Player.h
         Classes/SneakyJoystickSkinnedBase.h
@@ -90,6 +89,7 @@ list(APPEND GAME_HEADER
         Classes/IngameMenu.h
         Classes/Line.h
         Classes/GameOverMenu.h
+        Classes/Heart.h
      )
 
 if(ANDROID)

@@ -6,7 +6,7 @@
 #define PROJ_ANDROID_INGAMEMENU_H
 
 #include "cocos2d.h"
-#include "ui/CocosGUI.h"
+#include "Button.h"
 
 enum class IngameMenuState { NONE, RESUME, RESET, TO_MAIN_MENU };
 
@@ -23,8 +23,8 @@ struct IngameMenu : public cocos2d::Node {
   void hide();
  private:
   cocos2d::Sprite *background;
-  cocos2d::ui::Button *menuButton;
   cocos2d::Menu *menu;
+  Button *menuEnterButton;
   IngameMenuState currentState;
 
   std::function<void(IngameMenu *)> mainFunc;

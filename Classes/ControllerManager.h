@@ -5,26 +5,31 @@
 #ifndef PROJ_ANDROID_CONTROLLERMANAGER_H
 #define PROJ_ANDROID_CONTROLLERMANAGER_H
 
-#include "SneakyInput.h"
+#include "Button.h"
 #include "cocos2d.h"
 
-struct ControllerManager : public cocos2d::Node {
-  bool init(const cocos2d::Vec2 &position);
-  inline cocos2d::Vec2 getStickPosition() const {
-    return sneakyJoystick->getStickPosition();
-  }
-  inline bool getValue() const { return sneakyButton->getValue(); }
-  inline void setValue(bool value) { sneakyButton->setValue(value); }
+enum class ControllerManagerState {
+  NONE,
+  LEFT_BUTTON_PRESSED,
+  RIGHT_BUTTON_PRESSED
+};
 
+struct ControllerManager : public cocos2d::Node {
+  bool init(const std::function<void(Ref *)> &func);
+  inline ControllerManagerState getState() const {
+    return currentState;
+  }
  private:
-  void initJoystick();
-  void initButton();
+  void initRightButton();
+  void initLeftButton();
 
  public:
-  SneakyJoystick *sneakyJoystick;
-  SneakyJoystickSkinnedBase *sneakyJoystickBase;
-  SneakyButton *sneakyButton;
-  SneakyButtonSkinnedBase *sneakyButtonBase;
+   Button *rightButton;
+   Button *leftButton;
+
+   std::function<void(Ref *)> mainFunc;
+
+   ControllerManagerState currentState;
 };
 
 #endif  // PROJ_ANDROID_CONTROLLERMANAGER_H

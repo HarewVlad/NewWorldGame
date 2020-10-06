@@ -17,18 +17,20 @@ bool StartMenu::init(const std::function<void(StartMenu *)> &func) {
   auto size = cocos2d::Director::getInstance()->getVisibleSize();
 
   // Create background
-  background = cocos2d::Sprite::create("StartMenu\\background.jpg");
+  background = cocos2d::Sprite::create("StartMenu/background.jpg");
   background->setScaleX(size.width / background->getContentSize().width);
   background->setPosition(origin + size * 0.5f);
 
   // Create menu labels
   auto startLabel =
-      cocos2d::Label::createWithTTF("Start", "fonts/Marker Felt.ttf", 24);
+      cocos2d::Label::createWithTTF("Start", "fonts/ThaleahFat.ttf", 28);
+  startLabel->setColor(cocos2d::Color3B::YELLOW);
   auto exitLabel =
-      cocos2d::Label::createWithTTF("Exit", "fonts/Marker Felt.ttf", 24);
+      cocos2d::Label::createWithTTF("Exit", "fonts/ThaleahFat.ttf", 28);
+  exitLabel->setColor(cocos2d::Color3B::YELLOW);
 
   auto start = cocos2d::MenuItemLabel::create(startLabel);
-  start->setPositionY(24);
+  start->setPositionY(28);
   start->setCallback(CC_CALLBACK_1(StartMenu::menuStartCallback, this));
   auto exit = cocos2d::MenuItemLabel::create(exitLabel);
   exit->setPositionY(0);

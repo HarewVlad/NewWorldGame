@@ -18,7 +18,6 @@ struct StartMenu : public cocos2d::Scene {
  private:
   void menuStartCallback(cocos2d::Ref *sender);
   void menuExitCallback(cocos2d::Ref *sender);
-
  private:
   cocos2d::Sprite *background;
   cocos2d::Menu *menu;

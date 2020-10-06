@@ -4,7 +4,7 @@
 
 #include "Level.h"
 
-// #define DEBUG_ENABLED
+#define DEBUG_ENABLED
 
 bool Level::init(Player *player,
                  const std::vector<ObjectType> &objectsVariation, int numLines,
@@ -19,7 +19,7 @@ bool Level::init(Player *player,
 
   // Background
   {
-    background = cocos2d::Sprite::create("Level\\background.png");
+    background = cocos2d::Sprite::create("Level/Background/background.png");
     background->setScaleX(visibleSize.width /
                           background->getContentSize().width);
     background->setPosition(origin + visibleSize * 0.5f);
@@ -50,7 +50,28 @@ bool Level::init(Player *player,
   // Controllers
   {
     controllerManager = new ControllerManager();
-    controllerManager->init(origin + visibleSize * 0.5f);
+    controllerManager->init([this](cocos2d::Ref *sender) {
+      switch (controllerManager->getState()) {
+        case ControllerManagerState::LEFT_BUTTON_PRESSED:
+        {
+          // Move player left
+          int playerLineIndex = this->player->getCurrentLineIndex();
+          if (playerLineIndex != getLinesCount() - 1) {
+            this->player->moveRight(getLine(playerLineIndex + 1));
+          }
+        }
+        break;
+        case ControllerManagerState::RIGHT_BUTTON_PRESSED:
+        {
+          // Move player right
+          int playerLineIndex = this->player->getCurrentLineIndex();
+          if (playerLineIndex != 0) {
+            this->player->moveLeft(getLine(playerLineIndex - 1));
+          }
+        }
+        break;
+      }
+    });
 
     this->addChild(controllerManager, static_cast<int>(Components::CONTROLLERS),
                    static_cast<int>(Components::CONTROLLERS));
@@ -58,7 +79,7 @@ bool Level::init(Player *player,
 
   // Label
   {
-    scoreLabel = cocos2d::Label::createWithTTF("Score: " + std::to_string(score), "fonts/Marker Felt.ttf", 24);
+    scoreLabel = cocos2d::Label::createWithTTF("Score: " + std::to_string(score), "fonts/ThaleahFat.ttf", 28);
     scoreLabel->setPosition({ origin.x + visibleSize.width * 0.5f, origin.y + visibleSize.height * 0.8f });
 
     this->addChild(scoreLabel, static_cast<int>(Components::SCORE), static_cast<int>(Components::SCORE));
@@ -132,32 +153,6 @@ bool Level::init(Player *player,
 
 void Level::update(float t) {
   if (currentState == LevelState::RUN) {
-    auto joystickPosition =
-        controllerManager->getStickPosition();
-    auto isButtonPressed = controllerManager->getValue();
-
-    // Update player position
-    int playerLineIndex = player->getCurrentLineIndex();
-    if (joystickPosition.x > INPUT_EPSILON) {
-      if (playerLineIndex != getLinesCount() - 1) {
-        player->moveRight(t, getLine(playerLineIndex + 1));
-      }
-    } else if (joystickPosition.x < -INPUT_EPSILON) {
-      if (playerLineIndex != 0) {
-        player->moveLeft(t, getLine(playerLineIndex - 1));
-      }
-    } else if (joystickPosition.y > INPUT_EPSILON) {
-      player->moveForward(t);
-    } else if (joystickPosition.y < -INPUT_EPSILON) {
-      player->moveBackward(t);
-    }
-
-    if (isButtonPressed) {
-      player->attack(t);
-    }
-
-    controllerManager->setValue(false);
-
     // Weather
     if (!weatherManager->haveEffect(WeatherType::RAIN)) {
       weatherManager->addWeatherEffect(WeatherType::RAIN);
@@ -237,7 +232,7 @@ bool Level::onPhysicsContactBegin(cocos2d::PhysicsContact &contact) {
   return false;
 }
 
-bool Level::onPhysicsContactPreSolve(cocos2d::PhysicsContact &contact, PhysicsContactPreSolve& solve) {
+bool Level::onPhysicsContactPreSolve(cocos2d::PhysicsContact &contact, cocos2d::PhysicsContactPreSolve& solve) {
   auto nodeA = contact.getShapeA()->getBody()->getNode();
   auto nodeB = contact.getShapeB()->getBody()->getNode();
 
@@ -255,7 +250,7 @@ bool Level::onPhysicsContactPreSolve(cocos2d::PhysicsContact &contact, PhysicsCo
     }
   }
   else if (player->getCollisionState()) {
-    score += nodeA->getPosition().distance(nodeB->getPosition()) * 0.5f;
+    score += NUM_POINTS_PER_TICK;
 
     return false;
   }
