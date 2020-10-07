@@ -10,21 +10,17 @@
 
 enum class IngameMenuState { NONE, RESUME, RESET, TO_MAIN_MENU };
 
-struct IngameMenu : public cocos2d::Node {
+struct IngameMenu : public cocos2d::Scene {
   bool init(const std::function<void(IngameMenu *)> &func);
   inline IngameMenuState getState() { return currentState; }
   inline void setState(IngameMenuState state) { currentState = state; }
  private:
-  void onMenuCallback(cocos2d::Ref *sender);
-  void resetCallback(cocos2d::Ref *sender);
-  void toMainMenuCallback(cocos2d::Ref *sender);
-  void resumeCallback(cocos2d::Ref *sender);
-  void show();
-  void hide();
- private:
+   // TODO: redo hardcoded buttons
   cocos2d::Sprite *background;
-  cocos2d::Menu *menu;
-  Button *menuEnterButton;
+  Button *resume;
+  Button *reset;
+  Button *toMainMenu;
+
   IngameMenuState currentState;
 
   std::function<void(IngameMenu *)> mainFunc;

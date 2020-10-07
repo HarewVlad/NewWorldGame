@@ -119,11 +119,19 @@ bool Level::init(Player *player,
 
   // Ingame menu
   {
-    ingameMenu = new IngameMenu();
-    assert(ingameMenu->init(CC_CALLBACK_1(Level::onIngameMenu, this)));
+    // Ingame menu enter button
+    auto menuEnterButton = Button::create("IngameMenu/Button/Square.png",
+      cocos2d::Color3B::GRAY,
+      [this](cocos2d::Ref *sender) {
+      setPause();
+    });
+    menuEnterButton->setPosition(
+      cocos2d::Vec2(origin.x + visibleSize.width / 8.0f,
+        origin.y + visibleSize.height - visibleSize.height / 8.0f));
+    menuEnterButton->setText("Menu", cocos2d::Color3B::WHITE);
 
-    this->addChild(ingameMenu, static_cast<int>(Components::INGAME_MENU),
-                   static_cast<int>(Components::INGAME_MENU));
+    this->addChild(menuEnterButton, static_cast<int>(Components::INGAME_MENU),
+      static_cast<int>(Components::INGAME_MENU));
   }
 
   // Weather
@@ -268,25 +276,6 @@ void Level::setInitialPlayerPosition() {
   player->stopAllActions();
   player->setLineIndex(playerSpawnLineIndex);
   player->setPosition(playerSpawnPosition);
-}
-
-void Level::onIngameMenu(IngameMenu *ingameMenu) {
-  switch (ingameMenu->getState()) {
-    case IngameMenuState::RESET:
-      setReload();
-      setStart();
-      break;
-    case IngameMenuState::RESUME:
-      setStart();
-      break;
-    case IngameMenuState::TO_MAIN_MENU:
-      // Player has surrendered
-      setGameOver();
-      break;
-    case IngameMenuState::NONE:
-      setPause();
-      break;
-  }
 }
 
 void Level::setState(LevelState state) {

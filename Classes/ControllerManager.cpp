@@ -17,7 +17,7 @@ void ControllerManager::initLeftButton() {
   auto screenOrigin = cocos2d::Director::getInstance()->getVisibleOrigin();
   auto screenSize = cocos2d::Director::getInstance()->getVisibleSize();
 
-  leftButton = Button::create("Controllers/Triangle.png", cocos2d::Color3B::YELLOW, [this](cocos2d::Ref *sender) {
+  leftButton = Button::create("Controllers/Triangle.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
     currentState = ControllerManagerState::LEFT_BUTTON_PRESSED;
 
     if (mainFunc != nullptr) {
@@ -35,7 +35,7 @@ void ControllerManager::initRightButton() {
   auto screenOrigin = cocos2d::Director::getInstance()->getVisibleOrigin();
   auto screenSize = cocos2d::Director::getInstance()->getVisibleSize();
 
-  rightButton = Button::create("Controllers/Triangle.png", cocos2d::Color3B::YELLOW, [this](cocos2d::Ref *sender) {
+  rightButton = Button::create("Controllers/Triangle.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
     currentState = ControllerManagerState::RIGHT_BUTTON_PRESSED;
 
     if (mainFunc != nullptr) {

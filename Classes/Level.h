@@ -50,11 +50,8 @@ class Level : public cocos2d::Scene {
   void setInitialPlayerPosition();
   bool onPhysicsContactBegin(cocos2d::PhysicsContact &contact);
   bool onPhysicsContactPreSolve(cocos2d::PhysicsContact &contact, cocos2d::PhysicsContactPreSolve& solve);
-  void onIngameMenu(IngameMenu *ingameMenu);
  private:
   ControllerManager *controllerManager;
-  IngameMenu *ingameMenu;
-  GameOverMenu *gameOverMenu;
   WeatherManager *weatherManager;
   std::vector<Heart *> hearts;
   Player *player;

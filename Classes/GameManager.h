@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 
 #include "StartMenu.h"
+#include "IngameMenu.h"
 #include "Level.h"
 
 enum class GameState { NONE, MENU, PLAY};
@@ -23,12 +24,12 @@ class GameManager : public cocos2d::Scene {
   void setPlay();
  private:
   void onStartMenu(StartMenu *startMenu);
-  void onGameOverMenu(GameOverMenu *gameOverMenu);
+  void onIngameMenu(IngameMenu *ingameMenu);
   void onLevel(Level *level);
 
  private:
   StartMenu *startMenu;
-  GameOverMenu *gameOverMenu;
+  IngameMenu *ingameMenu;
   Level *level;
   Player *player;
 

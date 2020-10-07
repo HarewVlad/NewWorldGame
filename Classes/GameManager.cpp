@@ -35,11 +35,10 @@ bool GameManager::init() {
     assert(startMenu->init(CC_CALLBACK_1(GameManager::onStartMenu, this)));
   }
 
-  // Game over menu
+  // Ingame menu
   {
-    gameOverMenu = new GameOverMenu();
-    assert(
-        gameOverMenu->init(CC_CALLBACK_1(GameManager::onGameOverMenu, this)));
+    ingameMenu = new IngameMenu();
+    assert(ingameMenu->init(CC_CALLBACK_1(GameManager::onIngameMenu, this)));
   }
   
   // Player
@@ -153,26 +152,34 @@ void GameManager::onStartMenu(StartMenu *startMenu) {
   }
 }
 
-// TODO: not in use now
-void GameManager::onGameOverMenu(GameOverMenu *gameOverMenu) {
-  switch (gameOverMenu->getState()) {
-    case GameOverMenuState::RESTART:
-      setPlay();
-      break;
-    case GameOverMenuState::TO_MAIN_MENU:
-      setMenu();
-      break;
-    case GameOverMenuState::NONE:
-      break;
+void GameManager::onIngameMenu(IngameMenu *ingameMenu) {
+  switch (ingameMenu->getState()) {
+  case IngameMenuState::RESET:
+    setPlay();
+    break;
+  case IngameMenuState::RESUME:
+    level->setStart();
+
+    Director::getInstance()->pushScene(TransitionFade::create(
+      0.5, level, Color3B(0, 0, 0)));
+    break;
+  case IngameMenuState::TO_MAIN_MENU:
+    // Player has surrendered
+    level->setGameOver();
+    break;
+  case IngameMenuState::NONE:
+    level->setPause();
+    break;
   }
 }
-//
 
 void GameManager::onLevel(Level *level) {
   switch (level->getState()) {
     case LevelState::RUN:
       break;
     case LevelState::PAUSE:
+      Director::getInstance()->pushScene(TransitionFade::create(
+        0.5, ingameMenu, Color3B(0, 0, 0)));
       break;
     case LevelState::GAME_OVER:
       setMenu();

@@ -23,6 +23,7 @@ public:
         return currentState;
     }
     void setText(const std::string &text, const cocos2d::Color3B &color);
+    void setEnabled(bool flag);
 private:
     bool onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *event);
     void onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *event);
@@ -54,4 +55,6 @@ protected:
     const float OFFSET_Y = 16.0f;
     const float BASE_COLOR_MUL = 0.7f;
     const float ANIMATION_SPEED = 0.05f;
+
+    bool isEnabled;
 };

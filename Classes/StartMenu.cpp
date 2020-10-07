@@ -17,47 +17,37 @@ bool StartMenu::init(const std::function<void(StartMenu *)> &func) {
   auto size = cocos2d::Director::getInstance()->getVisibleSize();
 
   // Create background
-  background = cocos2d::Sprite::create("StartMenu/background.jpg");
+  background = cocos2d::Sprite::create("StartMenu/sumk1Y.jpg");
   background->setScaleX(size.width / background->getContentSize().width);
   background->setPosition(origin + size * 0.5f);
 
-  // Create menu labels
-  auto startLabel =
-      cocos2d::Label::createWithTTF("Start", "fonts/ThaleahFat.ttf", 28);
-  startLabel->setColor(cocos2d::Color3B::YELLOW);
-  auto exitLabel =
-      cocos2d::Label::createWithTTF("Exit", "fonts/ThaleahFat.ttf", 28);
-  exitLabel->setColor(cocos2d::Color3B::YELLOW);
+  // Create menu
+  auto start = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
+    currentState = StartMenuState::START;
 
-  auto start = cocos2d::MenuItemLabel::create(startLabel);
-  start->setPositionY(28);
-  start->setCallback(CC_CALLBACK_1(StartMenu::menuStartCallback, this));
-  auto exit = cocos2d::MenuItemLabel::create(exitLabel);
-  exit->setPositionY(0);
-  exit->setCallback(CC_CALLBACK_1(StartMenu::menuExitCallback, this));
+    if (mainFunc != nullptr) {
+      mainFunc(this);
+    }
+  });
+  start->setText("Start", cocos2d::Color3B::WHITE);
+  start->setPosition(origin + size * 0.5f);
+  auto exit = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
+    currentState = StartMenuState::EXIT;
 
-  menu = cocos2d::Menu::create();
-  menu->addChild(start);
-  menu->addChild(exit);
+    if (mainFunc != nullptr) {
+      mainFunc(this);
+    }
+  });
+  exit->setText("Exit", cocos2d::Color3B::WHITE);
+  exit->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.4f });
 
-  // Add components to the node
-  this->addChild(background);
-  this->addChild(menu);
+  this->addChild(background, 0);
+  this->addChild(start, 1);
+  this->addChild(exit, 1);
 
   this->scheduleUpdate();
 
   return true;
-}
-
-void StartMenu::menuStartCallback(cocos2d::Ref *sender) {
-  currentState = StartMenuState::START;
-
-  mainFunc(this);
-}
-void StartMenu::menuExitCallback(cocos2d::Ref *sender) {
-  currentState = StartMenuState::EXIT;
-
-  mainFunc(this);
 }
 
 void StartMenu::update(float t) {}

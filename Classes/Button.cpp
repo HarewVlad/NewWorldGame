@@ -44,6 +44,7 @@ bool Button::init(const std::string &filename, const cocos2d::Color3B &color, co
     _eventDispatcher->addEventListenerWithSceneGraphPriority(touchEvent, this);
 
     this->currentState = ButtonState::IDLE;
+    this->isEnabled = true;
     this->mainFunc = func;
 
     this->scheduleUpdate();
@@ -86,7 +87,7 @@ void Button::setPushedState() {
 }
 
 bool Button::onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *event) {
-    if (getButtonBoundingBox().containsPoint(touch->getLocation())) {
+    if (isEnabled && getButtonBoundingBox().containsPoint(touch->getLocation())) {
         setPushedState();
 
         mainFunc(this);
@@ -146,4 +147,8 @@ cocos2d::Rect Button::getSafeZone() const {
 void Button::setText(const std::string &text, const cocos2d::Color3B &color) {
   buttonText->setString(text);
   buttonText->setTextColor(cocos2d::Color4B(color));
+}
+
+void Button::setEnabled(bool flag) {
+  this->isEnabled = flag;
 }

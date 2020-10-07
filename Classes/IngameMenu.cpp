@@ -16,102 +16,41 @@ bool IngameMenu::init(const std::function<void(IngameMenu *)> &func) {
   background->setScaleX(size.width / background->getContentSize().width);
   background->setPosition(origin + size * 0.5f);
 
-  // Create menu labels
-  auto resumeLabel =
-      cocos2d::Label::createWithTTF("Resume", "fonts/ThaleahFat.ttf", 28);
-  resumeLabel->setColor(cocos2d::Color3B::YELLOW);
-  auto resetLabel =
-      cocos2d::Label::createWithTTF("Reset", "fonts/ThaleahFat.ttf", 28);
-  resetLabel->setColor(cocos2d::Color3B::YELLOW);
-  auto toMainMenuLabel = cocos2d::Label::createWithTTF(
-      "To Main Menu", "fonts/ThaleahFat.ttf", 28);
-  toMainMenuLabel->setColor(cocos2d::Color3B::YELLOW);
+  // Create menu
+  resume = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
+    currentState = IngameMenuState::RESUME;
 
-  auto resume = cocos2d::MenuItemLabel::create(resumeLabel);
-  resume->setPositionY(56);
-  resume->setCallback(CC_CALLBACK_1(IngameMenu::resumeCallback, this));
-  auto reset = cocos2d::MenuItemLabel::create(resetLabel);
-  reset->setPositionY(28);
-  reset->setCallback(CC_CALLBACK_1(IngameMenu::resetCallback, this));
-  auto toMainMenu = cocos2d::MenuItemLabel::create(toMainMenuLabel);
-  toMainMenu->setPositionY(0);
-  toMainMenu->setCallback(CC_CALLBACK_1(IngameMenu::toMainMenuCallback, this));
+    if (mainFunc != nullptr) {
+      mainFunc(this);
+    }
+  });
+  resume->setText("Resume", cocos2d::Color3B::WHITE);
+  resume->setPosition(origin + size * 0.5f);
 
-  menu = cocos2d::Menu::create();
-  menu->addChild(resume);
-  menu->addChild(reset);
-  menu->addChild(toMainMenu);
+  reset = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
+    currentState = IngameMenuState::RESET;
 
-  // Init pause button
-  menuEnterButton = Button::create("IngameMenu/Button/Square.png", 
-    cocos2d::Color3B::BLUE, 
-    CC_CALLBACK_1(IngameMenu::onMenuCallback, this));
-  menuEnterButton->setPosition(
-      cocos2d::Vec2(origin.x + size.width / 8.0f,
-                    origin.y + size.height - size.height / 8.0f));
-  menuEnterButton->setText("Menu", cocos2d::Color3B::YELLOW);
+    if (mainFunc != nullptr) {
+      mainFunc(this);
+    }
+  });
+  reset->setText("Reset", cocos2d::Color3B::WHITE);
+  reset->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.4f });
+
+  toMainMenu = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
+    currentState = IngameMenuState::TO_MAIN_MENU;
+
+    if (mainFunc != nullptr) {
+      mainFunc(this);
+    }
+  });
+  toMainMenu->setText("To Main Menu", cocos2d::Color3B::WHITE);
+  toMainMenu->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.3f });
 
   this->addChild(background, 1);
-  this->addChild(menu, 1);
-  this->addChild(menuEnterButton, 0);
-
-  hide();
+  this->addChild(resume, 1);
+  this->addChild(reset, 1);
+  this->addChild(toMainMenu, 1);
 
   return true;
-}
-
-void IngameMenu::onMenuCallback(cocos2d::Ref *sender) {
-  show();
-
-  if (mainFunc != nullptr) {
-    mainFunc(this);
-  }
-}
-
-void IngameMenu::resetCallback(cocos2d::Ref *sender) {
-  currentState = IngameMenuState::RESET;
-
-  if (mainFunc != nullptr) {
-    mainFunc(this);
-  }
-
-  hide();
-}
-
-void IngameMenu::toMainMenuCallback(cocos2d::Ref *sender) {
-  currentState = IngameMenuState::TO_MAIN_MENU;
-
-  if (mainFunc != nullptr) {
-    mainFunc(this);
-  }
-
-  hide();
-}
-
-void IngameMenu::resumeCallback(cocos2d::Ref *sender) {
-  currentState = IngameMenuState::RESUME;
-
-  if (mainFunc != nullptr) {
-    mainFunc(this);
-  }
-
-  hide();
-}
-
-void IngameMenu::show() {
-  menuEnterButton->setVisible(false);
-
-  menu->setEnabled(true);
-  menu->setVisible(true);
-  background->setVisible(true);
-
-  currentState = IngameMenuState::NONE;
-}
-
-void IngameMenu::hide() {
-  menuEnterButton->setVisible(true);
-
-  menu->setEnabled(false);
-  menu->setVisible(false);
-  background->setVisible(false);
 }
