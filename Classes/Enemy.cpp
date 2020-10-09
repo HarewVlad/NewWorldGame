@@ -35,7 +35,19 @@ int Enemy::getFrameCount(EnemyType type) {
   }
 }
 
-void Enemy::init(EnemyType type) {
+Enemy* Enemy::create(EnemyType type) {
+  Enemy *node = new (std::nothrow)Enemy();
+  if (node && node->init(type))
+  {
+    node->autorelease();
+    return node;
+  }
+
+  CC_SAFE_DELETE(node);
+  return nullptr;
+}
+
+bool Enemy::init(EnemyType type) {
   std::string typeAsString = enumToString(type);
   std::string mainSpriteSource = typeAsString + ".png";
   std::string walkConfig = typeAsString + "_Walk_%d.png";
@@ -67,13 +79,16 @@ void Enemy::init(EnemyType type) {
   }
   
   this->addChild(sprite);
+
+  this->scheduleUpdate();
+
+  return true;
 }
 
 void Enemy::setStop() {
   if (currentState != EnemyState::IDLE) {
     currentState = EnemyState::IDLE;
 
-    // Play animation
     sprite->stopAllActions();
   }
 }
@@ -81,6 +96,10 @@ void Enemy::setStop() {
 void Enemy::setStart() {
   if (currentState != EnemyState::WALK) {
     currentState = EnemyState::WALK;
+
+    // Movement
+    auto move = cocos2d::MoveBy::create(1 / 60.0f, { 0, -SPEED });
+    this->runAction(cocos2d::RepeatForever::create(move));
 
     // Play animation
     sprite->stopAllActions();
@@ -90,7 +109,14 @@ void Enemy::setStart() {
   }
 }
 
-// TODO: make special last element to get size
+void Enemy::update(float t) {
+  auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
+
+  if (this->getPositionY() <= -visibleSize.height * 1.5f) {
+    this->removeFromParentAndCleanup(true);
+  }
+}
+
 int Enemy::getEnemiesCount(){
   return static_cast<int>(EnemyType::LAST_ELEMENT);
 }

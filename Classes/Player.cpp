@@ -16,7 +16,7 @@ void Player::init(const std::string &filename) {
   sprite->setTag(TAG);
 #ifdef IS_OFFSET_ENABLED
   cocos2d::PhysicsBody *body = cocos2d::PhysicsBody::createBox(
-    sprite->getContentSize(), cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f), { sprite->getContentSize().width, sprite->getContentSize().height / 2.5f });
+    getExpandZone().size, cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f), { sprite->getContentSize().width, sprite->getContentSize().height / 2.5f });
 #else
   cocos2d::PhysicsBody *body = cocos2d::PhysicsBody::createBox(
     getExpandZone().size, cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f));

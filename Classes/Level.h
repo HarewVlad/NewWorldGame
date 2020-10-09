@@ -32,7 +32,7 @@ enum class Components {
 class Level : public cocos2d::Scene {
  public:
   bool init(Player *player, int numLines,
-            int numObjectsPerLine, float speed,
+            int numObjectsPerLine,
             const std::function<void(Level *)> &func);
 
   void update(float t);

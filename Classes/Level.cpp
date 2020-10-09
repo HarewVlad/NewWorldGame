@@ -7,7 +7,7 @@
 #define DEBUG_ENABLED
 
 bool Level::init(Player *player, int numLines,
-                 int numObjectsPerLine, float speed,
+                 int numObjectsPerLine,
                  const std::function<void(Level *)> &func) {
   if (!Scene::initWithPhysics()) {
     return false;
@@ -34,7 +34,7 @@ bool Level::init(Player *player, int numLines,
       float y = visibleSize.height + visibleSize.height / 4.0f;
 
       Line *line = new Line();
-      line->init(numObjectsPerLine, speed);
+      line->init(numObjectsPerLine);
       line->setPosition({x, y});
       lines.push_back(line);
 

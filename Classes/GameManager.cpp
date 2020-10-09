@@ -70,7 +70,7 @@ bool GameManager::init() {
   // Level
   {
     level = new Level();
-    level->init(player, 4, 10, 3.0f,
+    level->init(player, 4, 10,
                 CC_CALLBACK_1(GameManager::onLevel, this));
   }
 

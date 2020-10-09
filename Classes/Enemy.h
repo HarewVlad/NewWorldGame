@@ -21,10 +21,12 @@ static std::string enumToString(EnemyType type);
 
 class Enemy : public cocos2d::Node {
 public:
-  void init(EnemyType type);
+  static Enemy* create(EnemyType type);
+  bool init(EnemyType type);
   void setStop();
   void setStart();
   static int getEnemiesCount();
+  void update(float t);
 private:
   int getFrameCount(EnemyType type);
  private:
@@ -32,6 +34,9 @@ private:
   std::unordered_map<int, cocos2d::Animation *> animations;
 
   EnemyState currentState;
+
+  // Constants
+  const float SPEED = 3.0f;
 };
 
 #endif  // PROJ_ANDROID_ENEMY_H
