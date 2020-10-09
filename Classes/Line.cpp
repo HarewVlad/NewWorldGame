@@ -4,8 +4,7 @@
 
 #include "Line.h"
 
-bool Line::init(const std::vector<ObjectType> &objectsVariation,
-                int numObjectsPerLine, float speed) {
+bool Line::init(int numObjectsPerLine, float speed) {
   this->speed = speed;
   this->delay = static_cast<float>(cocos2d::random()) /
                 static_cast<float>(RAND_MAX / MAX_DELAY);
@@ -15,28 +14,34 @@ bool Line::init(const std::vector<ObjectType> &objectsVariation,
                         static_cast<float>(RAND_MAX / (MAX_SPAWN_FREQUENCY -
                                                        MIN_SPAWN_FREQUENCY));
 
-  int temp = numObjectsPerLine / objectsVariation.size();
-  int tempReminder = numObjectsPerLine % objectsVariation.size();
+  int temp = numObjectsPerLine / Enemy::getEnemiesCount();
+  int tempReminder = numObjectsPerLine % Enemy::getEnemiesCount();
 
-  for (auto objectType : objectsVariation) {
+  for (int i = 0; i < Enemy::getEnemiesCount(); ++i) {
     for (int j = 0; j < temp; ++j) {
-      objects.push_back(createObject(objectType, SCALE));
+      Enemy *enemy = new Enemy();
+      enemy->init(static_cast<EnemyType>(i));
+
+      enemies.push_back(enemy);
     }
   }
 
   for (int i = 0; i < tempReminder; ++i) {
-    int reminderDistributionIndex = cocos2d::random() % objectsVariation.size();
-    objects.push_back(
-        createObject(objectsVariation[reminderDistributionIndex], SCALE));
+    int reminderDistributionIndex = cocos2d::random() % Enemy::getEnemiesCount();
+
+    Enemy *enemy = new Enemy();
+    enemy->init(static_cast<EnemyType>(reminderDistributionIndex));
+
+    enemies.push_back(enemy);
   }
 
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  std::shuffle(objects.begin(), objects.end(),
+  std::shuffle(enemies.begin(), enemies.end(),
                std::default_random_engine(seed));
 
   // Add
-  for (auto object : objects) {
-    this->addChild(object.sprite);
+  for (auto enemy : enemies) {
+    this->addChild(enemy);
   }
 
   this->scheduleUpdate();
@@ -46,9 +51,9 @@ bool Line::init(const std::vector<ObjectType> &objectsVariation,
 
 void Line::update(float t) {
   if (currentState == LineState::RUN) {
-    if (lastRenderingObject < objects.size()) {
+    if (lastRenderingEnemy < enemies.size()) {
       if (time >= frequency) {
-        renderingObjects.push_back(objects[lastRenderingObject++]);
+        renderingEnemies.push_back(enemies[lastRenderingEnemy++]);
 
         time = 0.0f;
       } else {
@@ -56,53 +61,30 @@ void Line::update(float t) {
       }
     }
 
-    for (auto object : renderingObjects) {
+    for (auto enemy : renderingEnemies) {
       auto move = cocos2d::MoveBy::create(t, {0, -speed});
-      auto rotate = cocos2d::RotateBy::create(t, speed);
-      auto seq = cocos2d::Sequence::create(move, rotate, nullptr);
-      object.sprite->runAction(seq);
+      //auto rotate = cocos2d::RotateBy::create(t, speed);
+      //auto seq = cocos2d::Sequence::create(move, rotate, nullptr);
+      enemy->runAction(move);
     }
 
     auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
 
-    if (lastRenderingObject == objects.size() &&
-        renderingObjects[lastRenderingObject - 1].sprite->getPositionY() <= -visibleSize.height * 1.5f) {
+    if (lastRenderingEnemy == enemies.size() &&
+        renderingEnemies[lastRenderingEnemy - 1]->getPositionY() <= -visibleSize.height * 1.5f) {
       currentState = LineState::FINISHED;
     }
   }
 }
 
-Object Line::createObject(ObjectType type, float scale) {
-  cocos2d::Sprite *object = cocos2d::Sprite::create(getObjectSource(type));
-  cocos2d::PhysicsBody *body = cocos2d::PhysicsBody::createBox(
-      object->getContentSize(), cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f));
-  body->setDynamic(false);
-  body->setContactTestBitmask(0xFFFFFFFF);
-
-  object->setScale(scale);
-  object->setPhysicsBody(body);
-  return Object{type, object};
-}
-
-std::string Line::getObjectSource(ObjectType type) const {
-  switch (type) {
-    case ObjectType::BEER:
-      return "Beer.png";
-    case ObjectType::FISH:
-      return "Fish.png";
-    default:
-      throw std::runtime_error("no such object");
-  }
-}
-
 void Line::setReload() {
-  for (auto object : objects) {
-    object.sprite->setPosition(0, 0);
+  for (auto enemy : enemies) {
+    enemy->setPosition(0, 0);
   }
 
-  renderingObjects.clear();
+  renderingEnemies.clear();
   time = 0.0f - delay;
-  lastRenderingObject = 0;
+  lastRenderingEnemy = 0;
 
   // Change characteristics
   this->delay = static_cast<float>(cocos2d::random()) /
@@ -115,7 +97,7 @@ void Line::setReload() {
 
   // Shuffle objects
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  std::shuffle(objects.begin(), objects.end(),
+  std::shuffle(enemies.begin(), enemies.end(),
     std::default_random_engine(seed));
 
   currentState = LineState::NONE;
@@ -123,8 +105,16 @@ void Line::setReload() {
 
 void Line::setStart() {
   currentState = LineState::RUN;
+
+  for (auto enemy : enemies) {
+    enemy->setStart();
+  }
 }
 
 void Line::setPause() {
   currentState = LineState::PAUSE;
+
+  for (auto enemy : enemies) {
+    enemy->setStop();
+  }
 }

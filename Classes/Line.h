@@ -6,23 +6,12 @@
 #define PROJ_ANDROID_LINE_H
 
 #include "cocos2d.h"
-
-enum class ObjectType {
-  BEER,
-  FISH
-  // ...
-};
-
-struct Object {
-  ObjectType type;
-  cocos2d::Sprite *sprite;
-};
+#include "Enemy.h"
 
 enum class LineState { NONE, PAUSE, RUN, FINISHED };
 
 struct Line : public cocos2d::Node {
-  bool init(const std::vector<ObjectType> &objectsVariation,
-            int numObjectsPerLine, float speed);
+  bool init(int numObjectsPerLine, float speed);
   void update(float t) override;
   void setReload();
   void setStart();
@@ -31,18 +20,14 @@ struct Line : public cocos2d::Node {
     this->speed = speed;
   }
  private:
-  Object createObject(ObjectType type, float scale);
-  std::string getObjectSource(ObjectType type) const;
-
- private:
-  std::vector<Object> objects;  // All objects of a monster spawn line
-  std::vector<Object>
-      renderingObjects;  // Objects that are actually rendering on the screen
+  std::vector<Enemy *> enemies;  // All objects of a monster spawn line
+  std::vector<Enemy *>
+      renderingEnemies;  // Objects that are actually rendering on the screen
   float time;
   float frequency;
   float delay;
   float speed;
-  int lastRenderingObject;
+  int lastRenderingEnemy;
   LineState currentState;
 
   // Constants

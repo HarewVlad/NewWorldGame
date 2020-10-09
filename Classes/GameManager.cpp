@@ -9,18 +9,6 @@ USING_NS_CC;
 
 Scene *GameManager::createScene() { return GameManager::create(); }
 
-static cocos2d::Vector<cocos2d::SpriteFrame *> getSpriteFrames(const char *fmt,
-  int count) {
-  auto spriteFrameCache = cocos2d::SpriteFrameCache::getInstance();
-  cocos2d::Vector<cocos2d::SpriteFrame *> spriteFrames;
-  char str[256];
-  for (int i = 1; i < count; ++i) {
-    sprintf(str, fmt, i);
-    spriteFrames.pushBack(spriteFrameCache->getSpriteFrameByName(str));
-  }
-  return spriteFrames;
-}
-
 bool GameManager::init() {
   if (!Scene::init()) {
     return false;
@@ -46,16 +34,6 @@ bool GameManager::init() {
     player = new Player();
     player->init("detective.png");
 
-    /*
-    // Sprite frame cache
-    {
-      cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
-        "elf_idle.plist");
-      cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
-        "elf_walk.plist");
-    }
-    */
-
     // Cache
     {
       cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
@@ -63,7 +41,6 @@ bool GameManager::init() {
       cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile(
         "detective_run.plist");
     }
-
 
     // Animations
     {
@@ -88,41 +65,12 @@ bool GameManager::init() {
         player->addAnimation(PlayerState::MOVE_LEFT, animation);
       }
     }
-
-
-    /*
-    // Animations
-    {
-      // Idle
-      {
-        auto frames = getSpriteFrames("Elf_M_Idle_%d.png", 4);
-        auto animation =
-          cocos2d::Animation::createWithSpriteFrames(frames, 1 / 4.0f);
-        animation->retain();
-
-        player->addAnimation(PlayerState::IDLE, animation);
-      }
-
-      // Run
-      {
-        auto frames = getSpriteFrames("Elf_M_Walk_%d.png", 4);
-        auto animation =
-          cocos2d::Animation::createWithSpriteFrames(frames, 1 / 4.0f);
-        animation->retain();
-
-        player->addAnimation(PlayerState::MOVE_FORWARD, animation);
-        player->addAnimation(PlayerState::MOVE_RIGHT, animation);
-        player->addAnimation(PlayerState::MOVE_LEFT, animation);
-      }
-    }
-    */
   }
 
   // Level
   {
     level = new Level();
-    level->init(player,
-                {ObjectType::BEER, ObjectType::FISH}, 4, 10, 3.0f,
+    level->init(player, 4, 10, 3.0f,
                 CC_CALLBACK_1(GameManager::onLevel, this));
   }
 
@@ -158,7 +106,7 @@ void GameManager::onIngameMenu(IngameMenu *ingameMenu) {
     setPlay();
     break;
   case IngameMenuState::RESUME:
-    level->setStart();
+    level->setStart(false);
 
     Director::getInstance()->pushScene(TransitionFade::create(
       0.5, level, Color3B(0, 0, 0)));
@@ -200,7 +148,7 @@ void GameManager::setMenu() {
 
 void GameManager::setPlay() {
   level->setReload();
-  level->setStart();
+  level->setStart(true);
 
   currentState = GameState::PLAY;
 

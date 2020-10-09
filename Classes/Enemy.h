@@ -5,18 +5,33 @@
 #ifndef PROJ_ANDROID_ENEMY_H
 #define PROJ_ANDROID_ENEMY_H
 
+#include "Utils.h"
 #include "cocos2d.h"
 
-// TODO: inheritance from Character
-struct Enemy : public cocos2d::Node {
-  void init(const std::string &filename, const cocos2d::Vec2 &position);
+enum class EnemyType {
+  BANDIT, BEAR, ENT, GOLEM, MUSHROOM, LAST_ELEMENT
+};
 
+enum class EnemyState {
+  IDLE,
+  WALK
+};
+
+static std::string enumToString(EnemyType type);
+
+class Enemy : public cocos2d::Node {
+public:
+  void init(EnemyType type);
+  void setStop();
+  void setStart();
+  static int getEnemiesCount();
+private:
+  int getFrameCount(EnemyType type);
  private:
   cocos2d::Sprite *sprite;
+  std::unordered_map<int, cocos2d::Animation *> animations;
 
-  const float ENEMY_SCALE = 2.0f;
-  const float ENEMY_WALK_SPEED = 200.0f;
-  const float ENEMY_JUMP_SPEED = 2000.0f;
+  EnemyState currentState;
 };
 
 #endif  // PROJ_ANDROID_ENEMY_H

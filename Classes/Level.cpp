@@ -6,8 +6,7 @@
 
 #define DEBUG_ENABLED
 
-bool Level::init(Player *player,
-                 const std::vector<ObjectType> &objectsVariation, int numLines,
+bool Level::init(Player *player, int numLines,
                  int numObjectsPerLine, float speed,
                  const std::function<void(Level *)> &func) {
   if (!Scene::initWithPhysics()) {
@@ -35,7 +34,7 @@ bool Level::init(Player *player,
       float y = visibleSize.height + visibleSize.height / 4.0f;
 
       Line *line = new Line();
-      line->init(objectsVariation, numObjectsPerLine, speed);
+      line->init(numObjectsPerLine, speed);
       line->setPosition({x, y});
       lines.push_back(line);
 
@@ -77,12 +76,20 @@ bool Level::init(Player *player,
                    static_cast<int>(Components::CONTROLLERS));
   }
 
-  // Label
+  // Score
   {
     scoreLabel = cocos2d::Label::createWithTTF("Score: " + std::to_string(score), "fonts/ThaleahFat.ttf", 28);
     scoreLabel->setPosition({ origin.x + visibleSize.width * 0.5f, origin.y + visibleSize.height * 0.8f });
 
     this->addChild(scoreLabel, static_cast<int>(Components::SCORE), static_cast<int>(Components::SCORE));
+  }
+
+  // Countdown
+  {
+    countDownLabel = cocos2d::Label::createWithTTF("" + std::to_string(score), "fonts/ThaleahFat.ttf", 28);
+    countDownLabel->setPosition({ origin.x + visibleSize.width * 0.5f, origin.y + visibleSize.height * 0.7f });
+
+    this->addChild(countDownLabel, static_cast<int>(Components::COUNTDOWN), static_cast<int>(Components::COUNTDOWN));
   }
   
   // Player
@@ -143,8 +150,8 @@ bool Level::init(Player *player,
   }
 
   this->currentState = LevelState::NONE;
-  this->score = 0.0f;
-  this->numLivesLeft = 3;
+  this->score = 0;
+  this->numLivesLeft = NUM_LIVES;
   this->mainFunc = func;
 
   this->getPhysicsWorld()->setGravity(cocos2d::Vec2(0, 0));
@@ -191,19 +198,55 @@ void Level::setReload() {
     heart->setVisible(true);
   }
 
-  score = 0.0f;
-  numLivesLeft = 3;
+  score = 0;
+  numLivesLeft = NUM_LIVES;
   setInitialPlayerPosition();
 
   setState(LevelState::NONE);
 }
 
-void Level::setStart() {
-  for (auto line : lines) {
-    line->setStart();
-  }
+void Level::setStart(bool isDelay) {
+  if (isDelay) {
+    this->schedule(CC_SCHEDULE_SELECTOR(Level::startAfterDelay), 1 / 60.0f);
+  } else {
+    for (auto line : lines) {
+      line->setStart();
+    }
 
-  setState(LevelState::RUN);
+    setState(LevelState::RUN);
+  }
+}
+
+void Level::startAfterDelay(float t) {
+  static float time = TIME_TO_START;
+  if (time > 0.0f) {
+    time -= t;
+
+    int timeCeiled = ceilf(time);
+    if (timeCeiled != 0) {
+      countDownLabel->setString(std::to_string(timeCeiled));
+    } else {
+      countDownLabel->setString("LET'S GO!");
+    }
+    
+  } else {
+    for (auto line : lines) {
+      line->setStart();
+    }
+
+    setState(LevelState::RUN);
+
+    time = TIME_TO_START;
+
+    auto seq = cocos2d::Sequence::create(cocos2d::FadeOut::create(1.0f), 
+      cocos2d::CallFunc::create([this]() {
+      countDownLabel->setString("");
+      countDownLabel->runAction(cocos2d::FadeIn::create(0));
+    }), nullptr);
+    countDownLabel->runAction(seq);
+
+    this->unschedule(CC_SCHEDULE_SELECTOR(Level::startAfterDelay));
+  }
 }
 
 void Level::setPause() {
@@ -218,7 +261,7 @@ void Level::setPause() {
 
 void Level::setGameOver() {
   if (currentState != LevelState::GAME_OVER) {
-    score = 0.0f;
+    score = 0;
 
     setState(LevelState::GAME_OVER);
   }

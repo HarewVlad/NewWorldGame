@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 
+#include "Utils.h"
 #include "StartMenu.h"
 #include "IngameMenu.h"
 #include "Level.h"
