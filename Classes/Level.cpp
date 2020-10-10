@@ -21,6 +21,8 @@ bool Level::init(Player *player, int numLines,
     background = cocos2d::Sprite::create("Level/Background/background.png");
     background->setScaleX(visibleSize.width /
                           background->getContentSize().width);
+    background->setScaleY(visibleSize.height /
+                          background->getContentSize().height / 1.5f);
     background->setPosition(origin + visibleSize * 0.5f);
 
     this->addChild(background, static_cast<int>(Components::BACKGROUND),
@@ -78,7 +80,7 @@ bool Level::init(Player *player, int numLines,
 
   // Score
   {
-    scoreLabel = cocos2d::Label::createWithTTF("Score: " + std::to_string(score), "fonts/ThaleahFat.ttf", 28);
+    scoreLabel = cocos2d::Label::createWithTTF("Score : " + std::to_string(score), "fonts/ThaleahFat.ttf", 40);
     scoreLabel->setPosition({ origin.x + visibleSize.width * 0.5f, origin.y + visibleSize.height * 0.8f });
 
     this->addChild(scoreLabel, static_cast<int>(Components::SCORE), static_cast<int>(Components::SCORE));
@@ -86,7 +88,7 @@ bool Level::init(Player *player, int numLines,
 
   // Countdown
   {
-    countDownLabel = cocos2d::Label::createWithTTF("" + std::to_string(score), "fonts/ThaleahFat.ttf", 28);
+    countDownLabel = cocos2d::Label::createWithTTF("" + std::to_string(score), "fonts/ThaleahFat.ttf", 45);
     countDownLabel->setPosition({ origin.x + visibleSize.width * 0.5f, origin.y + visibleSize.height * 0.7f });
 
     this->addChild(countDownLabel, static_cast<int>(Components::COUNTDOWN), static_cast<int>(Components::COUNTDOWN));
@@ -113,15 +115,12 @@ bool Level::init(Player *player, int numLines,
 
   // Hearts
   {
-    cocos2d::Vec2 position = { origin.x + visibleSize.width * 0.8f, origin.y + visibleSize.height * 0.9f};
-    for (int i = 0; i < NUM_LIVES; ++i) {
-      Heart *heart = new Heart();
-      (void)heart->init();
-      heart->setPosition(position);
-      position.x += heart->getHeartSize().width;
-      hearts.push_back(heart);
-      this->addChild(heart, static_cast<int>(Components::LIVES), static_cast<int>(Components::LIVES));
-    }
+    Heart *heart = new Heart();
+    (void)heart->init();
+    heart->setPosition({ origin.x + visibleSize.width * 0.9f, origin.y + visibleSize.height * 0.9f });
+    heart->setScale(2.0f);
+    hearts.push_back(heart);
+    this->addChild(heart, static_cast<int>(Components::LIVES), static_cast<int>(Components::LIVES));
   }
 
   // Ingame menu
@@ -180,9 +179,7 @@ void Level::update(float t) {
     // Lives
     // TODO: redo this shit
     switch (numLivesLeft) {
-    case 3:
-      break;
-    case 2: case 1: case 0:
+    case 0:
       hearts[numLivesLeft]->setVisible(false);
       break;
     }

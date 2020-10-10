@@ -72,7 +72,7 @@ class Level : public cocos2d::Scene {
   // Constants
   const float INPUT_EPSILON = 20.0f;
   const float CONTACT_DISTANCE_EPSILON = 10.0f;
-  const int NUM_LIVES = 3;
+  const int NUM_LIVES = 1;
   const int NUM_POINTS_PER_TICK = 1;
   const float TIME_TO_START = 3;
 };

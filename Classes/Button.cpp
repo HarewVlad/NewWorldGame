@@ -21,7 +21,7 @@ bool Button::init(const std::string &filename, const cocos2d::Color3B &color, co
     main->setColor(color);
     main->setPositionY(OFFSET_Y);
 
-    buttonText = cocos2d::Label::createWithTTF("", "fonts/ThaleahFat.ttf", 28);
+    buttonText = cocos2d::Label::createWithTTF("", "fonts/ThaleahFat.ttf", 36);
     buttonText->setPosition(main->getContentSize() / 2.0f);
     main->addChild(buttonText);
 

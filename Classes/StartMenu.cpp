@@ -30,7 +30,7 @@ bool StartMenu::init(const std::function<void(StartMenu *)> &func) {
     }
   });
   start->setText("Start", cocos2d::Color3B::WHITE);
-  start->setPosition(origin + size * 0.5f);
+  start->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.5f });
   auto exit = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
     currentState = StartMenuState::EXIT;
 
@@ -45,9 +45,5 @@ bool StartMenu::init(const std::function<void(StartMenu *)> &func) {
   this->addChild(start, 1);
   this->addChild(exit, 1);
 
-  this->scheduleUpdate();
-
   return true;
 }
-
-void StartMenu::update(float t) {}

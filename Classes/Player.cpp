@@ -119,7 +119,7 @@ void Player::moveRight(Line *line) {
     currentLineIndex++;
     // Change position
     auto move = cocos2d::MoveTo::create(
-        2, {line->getPositionX(), this->getPositionY()});
+        1, {line->getPositionX(), this->getPositionY()});
     move->setTag(static_cast<int>(PlayerState::MOVE_RIGHT));
 
     this->runAction(move);
@@ -134,9 +134,9 @@ void Player::moveLeft(Line *line) {
     currentLineIndex--;
     // Change position
     auto move = cocos2d::MoveTo::create(
-        2, {line->getPositionX(), this->getPositionY()});
+        1, {line->getPositionX(), this->getPositionY()});
     move->setTag(static_cast<int>(PlayerState::MOVE_LEFT));
-
+    
     this->runAction(move);
   }
 }

@@ -13,7 +13,6 @@ enum class StartMenuState { NONE, START, EXIT };
 struct StartMenu : public cocos2d::Scene {
   bool init(const std::function<void(StartMenu *)> &func);
   inline StartMenuState getState() { return currentState; }
-  void update(float t);
 
  private:
   cocos2d::Sprite *background;
