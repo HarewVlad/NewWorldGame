@@ -3,8 +3,9 @@
 //
 
 #include "Level.h"
+#include "
 
-#define DEBUG_ENABLED
+// #define DEBUG_ENABLED
 
 bool Level::init(Player *player, int numLines,
                  int numObjectsPerLine,
@@ -19,11 +20,8 @@ bool Level::init(Player *player, int numLines,
   // Background
   {
     background = cocos2d::Sprite::create("Level/Background/background.png");
-    background->setScaleX(visibleSize.width /
-                          background->getContentSize().width);
-    background->setScaleY(visibleSize.height /
-                          background->getContentSize().height / 1.5f);
     background->setPosition(origin + visibleSize * 0.5f);
+    background->setScale(2.0f);
 
     this->addChild(background, static_cast<int>(Components::BACKGROUND),
                    static_cast<int>(Components::BACKGROUND));
@@ -80,7 +78,7 @@ bool Level::init(Player *player, int numLines,
 
   // Score
   {
-    scoreLabel = cocos2d::Label::createWithTTF("Score : " + std::to_string(score), "fonts/ThaleahFat.ttf", 40);
+    scoreLabel = cocos2d::Label::createWithTTF("Score : " + std::to_string(score), "fonts/ThaleahFat.ttf", 60);
     scoreLabel->setPosition({ origin.x + visibleSize.width * 0.5f, origin.y + visibleSize.height * 0.8f });
 
     this->addChild(scoreLabel, static_cast<int>(Components::SCORE), static_cast<int>(Components::SCORE));
@@ -88,7 +86,7 @@ bool Level::init(Player *player, int numLines,
 
   // Countdown
   {
-    countDownLabel = cocos2d::Label::createWithTTF("" + std::to_string(score), "fonts/ThaleahFat.ttf", 45);
+    countDownLabel = cocos2d::Label::createWithTTF("" + std::to_string(score), "fonts/ThaleahFat.ttf", 70);
     countDownLabel->setPosition({ origin.x + visibleSize.width * 0.5f, origin.y + visibleSize.height * 0.7f });
 
     this->addChild(countDownLabel, static_cast<int>(Components::COUNTDOWN), static_cast<int>(Components::COUNTDOWN));
@@ -118,7 +116,7 @@ bool Level::init(Player *player, int numLines,
     Heart *heart = new Heart();
     (void)heart->init();
     heart->setPosition({ origin.x + visibleSize.width * 0.9f, origin.y + visibleSize.height * 0.9f });
-    heart->setScale(2.0f);
+    heart->setScale(3.0f);
     hearts.push_back(heart);
     this->addChild(heart, static_cast<int>(Components::LIVES), static_cast<int>(Components::LIVES));
   }
@@ -307,11 +305,12 @@ bool Level::onPhysicsContactPreSolve(cocos2d::PhysicsContact &contact, cocos2d::
 }
 
 void Level::setInitialPlayerPosition() {
+  auto origin = cocos2d::Director::getInstance()->getVisibleOrigin();
   auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
 
   int playerSpawnLineIndex = cocos2d::random() % lines.size();
   auto playerSpawnPosition = lines[playerSpawnLineIndex]->getPosition();
-  playerSpawnPosition.y -= visibleSize.height;
+  playerSpawnPosition.y = origin.y + visibleSize.height / 8.0f;
 
   player->stopAllActions();
   player->setLineIndex(playerSpawnLineIndex);

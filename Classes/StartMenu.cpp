@@ -19,31 +19,42 @@ bool StartMenu::init(const std::function<void(StartMenu *)> &func) {
   // Create background
   background = cocos2d::Sprite::create("StartMenu/sumk1Y.jpg");
   background->setScaleX(size.width / background->getContentSize().width);
+  background->setScaleY(size.height / background->getContentSize().height);
   background->setPosition(origin + size * 0.5f);
 
   // Create menu
-  auto start = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
+  auto startButton = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
     currentState = StartMenuState::START;
 
     if (mainFunc != nullptr) {
       mainFunc(this);
     }
   });
-  start->setText("Start", cocos2d::Color3B::WHITE);
-  start->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.5f });
-  auto exit = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
+  startButton->setText("Start", cocos2d::Color3B::WHITE);
+  startButton->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.6f });
+  auto exitButton = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
     currentState = StartMenuState::EXIT;
 
     if (mainFunc != nullptr) {
       mainFunc(this);
     }
   });
-  exit->setText("Exit", cocos2d::Color3B::WHITE);
-  exit->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.4f });
+  exitButton->setText("Exit", cocos2d::Color3B::WHITE);
+  exitButton->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.5f });
+  auto aboutButton = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
+    currentState = StartMenuState::ABOUT;
+
+    if (mainFunc != nullptr) {
+      mainFunc(this);
+    }
+  });
+  aboutButton->setText("About", cocos2d::Color3B::WHITE);
+  aboutButton->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.4f });
 
   this->addChild(background, 0);
-  this->addChild(start, 1);
-  this->addChild(exit, 1);
+  this->addChild(startButton, 1);
+  this->addChild(exitButton, 1);
+  this->addChild(aboutButton, 1);
 
   return true;
 }

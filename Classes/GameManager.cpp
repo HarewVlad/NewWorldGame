@@ -67,6 +67,15 @@ bool GameManager::init() {
     }
   }
 
+  // About
+  {
+    aboutWindow = About::create([this](cocos2d::Ref *sender) {
+      cocos2d::Director::getInstance()->pushScene(cocos2d::TransitionFade::create(
+        0.5, startMenu, cocos2d::Color3B(0, 0, 0)));
+    });
+    aboutWindow->retain();
+  }
+
   // Level
   {
     level = new Level();
@@ -94,6 +103,10 @@ void GameManager::onStartMenu(StartMenu *startMenu) {
       break;
     case StartMenuState::EXIT:
       cocos2d::Director::getInstance()->end();
+      break;
+    case StartMenuState::ABOUT:
+      Director::getInstance()->pushScene(TransitionFade::create(
+        0.5, aboutWindow, Color3B(0, 0, 0)));
       break;
     case StartMenuState::NONE:
       break;

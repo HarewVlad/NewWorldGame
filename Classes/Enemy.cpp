@@ -55,6 +55,7 @@ bool Enemy::init(EnemyType type) {
 
   // Main sprite
   sprite = cocos2d::Sprite::create(mainSpriteSource);
+  sprite->setScale(SCALE);
   cocos2d::PhysicsBody *body = cocos2d::PhysicsBody::createBox(
     sprite->getContentSize(), cocos2d::PhysicsMaterial(0.0f, 0.0f, 1.0f));
   body->setDynamic(false);
@@ -98,8 +99,8 @@ void Enemy::setStart() {
     currentState = EnemyState::WALK;
 
     // Movement
-    auto move = cocos2d::MoveBy::create(1 / 60.0f, { 0, -SPEED });
-    this->runAction(cocos2d::RepeatForever::create(move));
+    auto moveDown = cocos2d::MoveBy::create(MOVE_DURATION, { 0, -SPEED});
+    this->runAction(cocos2d::RepeatForever::create(moveDown));
 
     // Play animation
     sprite->stopAllActions();

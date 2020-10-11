@@ -8,7 +8,7 @@
 #include "cocos2d.h"
 #include "Button.h"
 
-enum class StartMenuState { NONE, START, EXIT };
+enum class StartMenuState { NONE, START, EXIT, ABOUT };
 
 struct StartMenu : public cocos2d::Scene {
   bool init(const std::function<void(StartMenu *)> &func);

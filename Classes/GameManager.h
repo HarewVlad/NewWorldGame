@@ -7,6 +7,7 @@
 #include "StartMenu.h"
 #include "IngameMenu.h"
 #include "Level.h"
+#include "About.h"
 
 enum class GameState { NONE, MENU, PLAY};
 
@@ -31,6 +32,7 @@ class GameManager : public cocos2d::Scene {
  private:
   StartMenu *startMenu;
   IngameMenu *ingameMenu;
+  About *aboutWindow;
   Level *level;
   Player *player;
 

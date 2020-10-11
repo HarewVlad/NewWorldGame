@@ -69,6 +69,7 @@ list(APPEND GAME_SOURCE
         Classes/GameOverMenu.cpp
         Classes/Heart.cpp
         Classes/Button.cpp
+        Classes/About.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
@@ -84,6 +85,7 @@ list(APPEND GAME_HEADER
         Classes/GameOverMenu.h
         Classes/Heart.h
         Classes/Button.h
+        Classes/About.h
      )
 
 if(ANDROID)

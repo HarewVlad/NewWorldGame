@@ -90,7 +90,9 @@ bool Button::onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *event) {
     if (isEnabled && getButtonBoundingBox().containsPoint(touch->getLocation())) {
         setPushedState();
 
-        mainFunc(this);
+        if (mainFunc != nullptr) {
+          mainFunc(this);
+        }
     }
 
     return true;

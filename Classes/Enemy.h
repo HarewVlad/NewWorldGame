@@ -36,7 +36,9 @@ private:
   EnemyState currentState;
 
   // Constants
-  const float SPEED = 3.0f;
+  const float SPEED = 3600.0f;
+  const float MOVE_DURATION = 20.0f;
+  const float SCALE = 1.5f;
 };
 
 #endif  // PROJ_ANDROID_ENEMY_H
