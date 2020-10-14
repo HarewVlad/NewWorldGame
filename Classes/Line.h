@@ -17,6 +17,9 @@ struct Line : public cocos2d::Node {
   void setStart();
   void setPause();
  private:
+    std::vector<Enemy *> runningEnemies;
+    int maxRunningEnemies = 100;
+
   float time;
   float frequency;
   float delay;

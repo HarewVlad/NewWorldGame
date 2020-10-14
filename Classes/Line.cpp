@@ -26,6 +26,8 @@ void Line::update(float t) {
       enemy->setStart();
       this->addChild(enemy);
 
+      runningEnemies.push_back(enemy);
+
       delay = static_cast<float>(cocos2d::random()) /
                     static_cast<float>(RAND_MAX / MAX_DELAY);
       frequency = MIN_SPAWN_FREQUENCY +
@@ -36,10 +38,27 @@ void Line::update(float t) {
     } else {
       time += t;
     }
+
+    if (runningEnemies.size() > maxRunningEnemies) {
+      auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
+
+      for (auto it = runningEnemies.begin(); it != runningEnemies.end(); ++it) {
+        if ((*it)->getPositionY() <= -visibleSize.height * 1.5f) {
+          (*it)->removeFromParentAndCleanup(true);
+
+          runningEnemies.erase(it);
+        }
+      }
+    }
   }
 }
 
 void Line::setReload() {
+  for (auto it = runningEnemies.begin(); it != runningEnemies.end(); ++it) {
+    (*it)->removeFromParentAndCleanup(true);
+  }
+  runningEnemies.clear();
+
   delay = static_cast<float>(cocos2d::random()) /
     static_cast<float>(RAND_MAX / MAX_DELAY);
   frequency = MIN_SPAWN_FREQUENCY +

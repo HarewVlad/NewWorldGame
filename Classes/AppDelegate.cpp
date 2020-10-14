@@ -120,6 +120,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
   register_all_packages();
 
+  // Init ads
+  firebaseApp = firebase::App::Create(firebase::AppOptions(), JniHelper::getEnv(),
+                                                 JniHelper::getActivity());
+  firebase::admob::Initialize(*firebaseApp, "XXX");
+
   // create a scene. it's an autorelease object
   auto scene = GameManager::createScene();
 

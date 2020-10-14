@@ -143,7 +143,18 @@ void GameManager::onLevel(Level *level) {
         0.5, ingameMenu, Color3B(0, 0, 0)));
       break;
     case LevelState::GAME_OVER:
+    {
+      static int gameOverCount = 1;
+      if (gameOverCount == adShowRate) {
+        startMenu->setShouldShowAd(true);
+
+        gameOverCount = 1;
+      } else {
+        gameOverCount++;
+      }
+
       setMenu();
+    }
       break;
     case LevelState::WIN:
       break;
@@ -168,3 +179,4 @@ void GameManager::setPlay() {
   Director::getInstance()->pushScene(TransitionFade::create(
     0.5, level, Color3B(0, 0, 0)));
 }
+

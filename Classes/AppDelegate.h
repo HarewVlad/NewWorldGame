@@ -26,6 +26,7 @@
 #define  _APP_DELEGATE_H_
 
 #include "cocos2d.h"
+#include "../firebase_cpp_sdk/include/firebase/app.h"
 
 /**
 @brief    The cocos2d Application.
@@ -58,6 +59,9 @@ public:
     @param  the pointer of the application
     */
     virtual void applicationWillEnterForeground();
+private:
+    ::firebase::App *firebaseApp;
+
 };
 
 #endif // _APP_DELEGATE_H_

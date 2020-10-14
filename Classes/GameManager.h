@@ -9,6 +9,8 @@
 #include "Level.h"
 #include "About.h"
 
+#include "../firebase_cpp_sdk/include/firebase/admob.h"
+
 enum class GameState { NONE, MENU, PLAY};
 
 class GameManager : public cocos2d::Scene {
@@ -28,7 +30,6 @@ class GameManager : public cocos2d::Scene {
   void onStartMenu(StartMenu *startMenu);
   void onIngameMenu(IngameMenu *ingameMenu);
   void onLevel(Level *level);
-
  private:
   StartMenu *startMenu;
   IngameMenu *ingameMenu;
@@ -37,6 +38,8 @@ class GameManager : public cocos2d::Scene {
   Player *player;
 
   GameState currentState;
+
+  const int adShowRate = 3; // 1 ad every 3 game overs
 };
 
 #endif  // __GAMEMANAGER_H__

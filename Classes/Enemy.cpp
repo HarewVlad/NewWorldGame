@@ -81,7 +81,7 @@ bool Enemy::init(EnemyType type) {
   
   this->addChild(sprite);
 
-  this->scheduleUpdate();
+  // this->scheduleUpdate();
 
   return true;
 }
@@ -111,11 +111,13 @@ void Enemy::setStart() {
 }
 
 void Enemy::update(float t) {
+  /*
   auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
 
   if (this->getPositionY() <= -visibleSize.height * 1.5f) {
     this->removeFromParentAndCleanup(true);
   }
+  */
 }
 
 int Enemy::getEnemiesCount(){
