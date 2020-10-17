@@ -17,9 +17,18 @@ static firebase::admob::AdParent getAdParent() {
 #endif
 }
 
-void StartMenu::setShouldShowAd(bool flag) {
-  shouldShowAds = flag;
+StartMenu *StartMenu::create(const std::function<void(StartMenu *)> &func) {
+  StartMenu *node = new (std::nothrow) StartMenu();
+  if (node && node->init(func)) {
+    node->autorelease();
+    return node;
+  }
+
+  CC_SAFE_DELETE(node);
+  return nullptr;
 }
+
+void StartMenu::setShouldShowAd(bool flag) { shouldShowAds = flag; }
 
 bool StartMenu::init(const std::function<void(StartMenu *)> &func) {
   if (!Scene::init()) {
@@ -40,38 +49,45 @@ bool StartMenu::init(const std::function<void(StartMenu *)> &func) {
   background->setPosition(origin + size * 0.5f);
 
   // Create menu
-  auto startButton = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
-    currentState = StartMenuState::START;
+  auto startButton = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY,
+                                    [this](cocos2d::Ref *sender) {
+                                      currentState = StartMenuState::START;
 
-    if (mainFunc != nullptr) {
-      mainFunc(this);
-    }
-  });
+                                      if (mainFunc != nullptr) {
+                                        mainFunc(this);
+                                      }
+                                    });
   startButton->setText("Start", cocos2d::Color3B::WHITE);
-  startButton->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.6f });
-  auto exitButton = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
-    currentState = StartMenuState::EXIT;
+  startButton->setPosition(
+      {origin.x + size.width * 0.5f, origin.y + size.height * 0.6f});
+  auto exitButton = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY,
+                                   [this](cocos2d::Ref *sender) {
+                                     currentState = StartMenuState::EXIT;
 
-    if (mainFunc != nullptr) {
-      mainFunc(this);
-    }
-  });
+                                     if (mainFunc != nullptr) {
+                                       mainFunc(this);
+                                     }
+                                   });
   exitButton->setText("Exit", cocos2d::Color3B::WHITE);
-  exitButton->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.5f });
-  auto aboutButton = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY, [this](cocos2d::Ref *sender) {
-    currentState = StartMenuState::ABOUT;
+  exitButton->setPosition(
+      {origin.x + size.width * 0.5f, origin.y + size.height * 0.5f});
+  auto aboutButton = Button::create("Buttons/Rect.png", cocos2d::Color3B::GRAY,
+                                    [this](cocos2d::Ref *sender) {
+                                      currentState = StartMenuState::ABOUT;
 
-    if (mainFunc != nullptr) {
-      mainFunc(this);
-    }
-  });
+                                      if (mainFunc != nullptr) {
+                                        mainFunc(this);
+                                      }
+                                    });
   aboutButton->setText("About", cocos2d::Color3B::WHITE);
-  aboutButton->setPosition({ origin.x + size.width * 0.5f, origin.y + size.height * 0.4f });
+  aboutButton->setPosition(
+      {origin.x + size.width * 0.5f, origin.y + size.height * 0.4f});
 
   // Ads
   {
     interstitialAd = new firebase::admob::InterstitialAd();
-    interstitialAd->Initialize(getAdParent(), "XXX");
+    interstitialAd->Initialize(getAdParent(),
+                               "XXX");
 
     adRequest = {};
     adRequest.birthday_day = 1;
@@ -102,9 +118,9 @@ void StartMenu::update(float t) {
 
 void StartMenu::tryLoadAd() {
   if (interstitialAd->InitializeLastResult().status() ==
-      firebase::kFutureStatusComplete &&
+          firebase::kFutureStatusComplete &&
       interstitialAd->InitializeLastResult().error() ==
-      firebase::admob::kAdMobErrorNone) {
+          firebase::admob::kAdMobErrorNone) {
     interstitialAd->LoadAd(adRequest);
 
     isAdLoaded = true;
@@ -112,9 +128,9 @@ void StartMenu::tryLoadAd() {
 }
 void StartMenu::tryShowAd() {
   if (interstitialAd->LoadAdLastResult().status() ==
-      firebase::kFutureStatusComplete &&
+          firebase::kFutureStatusComplete &&
       interstitialAd->LoadAdLastResult().error() ==
-      firebase::admob::kAdMobErrorNone) {
+          firebase::admob::kAdMobErrorNone) {
     interstitialAd->Show();
 
     isAdLoaded = false;

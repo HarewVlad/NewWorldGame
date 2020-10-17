@@ -26,7 +26,9 @@
 #define  _APP_DELEGATE_H_
 
 #include "cocos2d.h"
+#include "GameManager.h"
 #include "../firebase_cpp_sdk/include/firebase/app.h"
+#include "../firebase_cpp_sdk/include/firebase/admob.h"
 
 /**
 @brief    The cocos2d Application.

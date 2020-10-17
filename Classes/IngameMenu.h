@@ -11,6 +11,7 @@
 enum class IngameMenuState { NONE, RESUME, RESET, TO_MAIN_MENU };
 
 struct IngameMenu : public cocos2d::Scene {
+    static IngameMenu *create(const std::function<void(IngameMenu *)> &func);
   bool init(const std::function<void(IngameMenu *)> &func);
   inline IngameMenuState getState() { return currentState; }
   inline void setState(IngameMenuState state) { currentState = state; }

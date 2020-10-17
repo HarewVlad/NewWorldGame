@@ -19,14 +19,14 @@ bool GameManager::init() {
 
   // Start menu
   {
-    startMenu = new StartMenu();
-    assert(startMenu->init(CC_CALLBACK_1(GameManager::onStartMenu, this)));
+    startMenu = StartMenu::create(CC_CALLBACK_1(GameManager::onStartMenu, this));
+    startMenu->retain();
   }
 
   // Ingame menu
   {
-    ingameMenu = new IngameMenu();
-    assert(ingameMenu->init(CC_CALLBACK_1(GameManager::onIngameMenu, this)));
+    ingameMenu = IngameMenu::create(CC_CALLBACK_1(GameManager::onIngameMenu, this));
+    ingameMenu->retain();
   }
   
   // Player
@@ -85,7 +85,7 @@ bool GameManager::init() {
 
   this->currentState = GameState::NONE;
 
-  this->scheduleUpdate();
+  this->scheduleOnce(CC_SCHEDULE_SELECTOR(GameManager::update), 0);
 
   return true;
 }

@@ -4,6 +4,18 @@
 
 #include "IngameMenu.h"
 
+IngameMenu *IngameMenu::create(const std::function<void(IngameMenu *)> &func) {
+  IngameMenu *node = new (std::nothrow)IngameMenu();
+  if(node && node->init(func))
+  {
+    node->autorelease();
+    return node;
+  }
+
+  CC_SAFE_DELETE(node);
+  return nullptr;
+}
+
 bool IngameMenu::init(const std::function<void(IngameMenu *)> &func) {
   this->mainFunc = func;
   this->currentState = IngameMenuState::NONE;

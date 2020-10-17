@@ -19,8 +19,8 @@ public:
     static Button* create(const std::string &filename, const cocos2d::Color3B &color, const std::function<void(Ref *)> &func);
 
     bool init(const std::string &filename, const cocos2d::Color3B &color, const std::function<void(Ref *)> &func);
-    inline int getCurrentState() const {
-        return currentState;
+    inline constexpr int getCurrentState() {
+        return m_CurrentState;
     }
     void setText(const std::string &text, const cocos2d::Color3B &color);
     void setEnabled(bool flag);
@@ -40,21 +40,21 @@ protected:
     std::function<void (Ref *)> mainFunc;
 
     cocos2d::EventListenerTouchOneByOne *touchEvent;
-    cocos2d::Sprite *main;
-    cocos2d::Sprite *base;
-    cocos2d::Sprite *shadow;
+    cocos2d::Sprite *m_pMainSprite;
+    cocos2d::Sprite *m_pBaseSprite;
+    cocos2d::Sprite *m_pShadowSprite;
 
-    cocos2d::Label *buttonText;
+    cocos2d::Label *m_pButtonText;
 
-    int currentState;
+    int m_CurrentState;
 
     // Constants
-    const float epsilon = 0.5f;
-    const float expandZoneOffset = 50.0f;
-    const float safeZoneOffset = 100.0f;
+    const float EPSILON = 0.5f;
+    const float EXPAND_ZONE_OFFSET = 50.0f;
+    const float SAFE_ZONE_OFFSET = 100.0f;
     const float OFFSET_Y = 16.0f;
     const float BASE_COLOR_MUL = 0.7f;
     const float ANIMATION_SPEED = 0.05f;
 
-    bool isEnabled;
+    bool m_isEnabled;
 };
